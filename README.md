@@ -1,0 +1,1 @@
+This is an annotation platform for PRM data. This is different from ORM paradigm, which all the annotation platforms are optimized for. So, we had to build a custom annotation platform that suited our needs. 
