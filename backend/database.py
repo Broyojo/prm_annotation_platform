@@ -63,7 +63,7 @@ if __name__ == "__main__":
     import json
     import random
 
-    WRITE = False
+    WRITE = True
 
     if WRITE:
         from faker import Faker
@@ -73,7 +73,9 @@ if __name__ == "__main__":
         users = []
         for _ in range(10):
             user = User(
-                name=faker.name(), api_key=str(faker.uuid4()), permissions="standard"
+                name=faker.name(),
+                api_key=str(faker.uuid4()),
+                permissions=random.choice(["standard", "admin"]),
             )
             users.append(user)
 
@@ -115,14 +117,14 @@ if __name__ == "__main__":
                 problem.annotations.append(annotation)
                 user.annotations.append(annotation)
 
-        engine = create_engine("sqlite:///database.db")
+        engine = create_engine("sqlite:///test_database.db")
         SQLModel.metadata.create_all(engine)
 
         with Session(engine) as session:
             session.add(dataset)
             session.commit()
     else:
-        engine = create_engine("sqlite:///database.db")
+        engine = create_engine("sqlite:///test_database.db")
         SQLModel.metadata.create_all(engine)
 
         with Session(engine) as session:
