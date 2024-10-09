@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 import nltk
@@ -62,8 +63,9 @@ class Dataset(SQLModel, table=True):
 if __name__ == "__main__":
     import json
     import random
+    import secrets
 
-    WRITE = True
+    WRITE = False
 
     if WRITE:
         from faker import Faker
@@ -74,34 +76,65 @@ if __name__ == "__main__":
         for _ in range(10):
             user = User(
                 name=faker.name(),
-                api_key=str(faker.uuid4()),
-                permissions=random.choice(["standard", "admin"]),
+                api_key=secrets.token_urlsafe(32),
+                permissions="standard",
             )
             users.append(user)
 
-        dataset = Dataset(name="Test Dataset", domain="math")
-
-        with open("./testing/test_data.json", "r") as f:
-            data = json.load(f)
-
-        for d in data:
-            steps = nltk.sent_tokenize(d["model_answer"])
-            problem = Problem(
-                question=d["question"],
-                answer=d["answer"],
-                llm_answer=d["model_answer"],
-                steps=json.dumps(steps),
-                num_steps=len(steps),
-                is_correct=d.get("is_correct"),
-                solve_ratio=d.get("solve_ratio"),
-                llm_name=d.get("model_name"),
-                prompt_format=d.get("prompt_format"),
-                final_answer=json.dumps(d.get("final_answer")),
+        users.append(
+            User(
+                name="David Andrews",
+                api_key=secrets.token_urlsafe(32),
+                permissions="admin",
             )
-            dataset.problems.append(problem)
+        )
+
+        print("Users:")
+        for user in users:
+            print(user)
+        print()
+
+        datasets = []
+        for file in os.listdir("./test_data/normalized"):
+            path = os.path.join("./test_data/normalized", file)
+            dataset = Dataset(
+                name=file.split(".")[0]
+                .replace("_", " ")
+                .replace("selected", "")
+                .strip()
+                .title(),
+                domain="math",
+            )
+
+            with open(path, "r") as f:
+                problems = json.load(f)
+
+            for problem in problems:
+                dataset.problems.append(
+                    Problem(
+                        question=problem["question"],
+                        answer=problem["answer"],
+                        llm_answer=problem["llm_answer"],
+                        steps=json.dumps(problem["steps"]),
+                        num_steps=problem["num_steps"],
+                        is_correct=problem.get("is_correct"),
+                        solve_ratio=problem.get("solve_ratio"),
+                        llm_name=problem.get("llm_name"),
+                        prompt_format=problem.get("prompt_format"),
+                        final_answer=json.dumps(problem.get("final_answer")),
+                    )
+                )
+
+            datasets.append(dataset)
+
+        print("Datasets:")
+        for dataset in datasets:
+            print(dataset)
+            print("Num problems:", len(dataset.problems))
+        print()
 
         for user in users:
-            # pick random subset of problems for each to annotate with random labeling
+            dataset = random.sample(datasets, k=1)[0]
             problems = random.sample(dataset.problems, k=3)
             for problem in problems:
                 annotation = Annotation(
@@ -121,7 +154,8 @@ if __name__ == "__main__":
         SQLModel.metadata.create_all(engine)
 
         with Session(engine) as session:
-            session.add(dataset)
+            for dataset in datasets:
+                session.add(dataset)
             session.commit()
     else:
         engine = create_engine("sqlite:///test_database.db")

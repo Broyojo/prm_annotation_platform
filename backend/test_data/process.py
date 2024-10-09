@@ -33,9 +33,9 @@ for file in os.listdir("./old"):
                 "solve_ratio": d.get("solve_ratio"),
                 "llm_name": d.get("model_name"),
                 "prompt_format": d.get("prompt_format"),
-                "final_anwer": d.get("final_answer"),
+                "final_answer": d.get("final_answer"),
             }
         )
 
-    with open(os.path.join("normalized", file), "w") as f:
+    with open(os.path.join("normalized", file.split(".")[0] + ".json"), "w") as f:
         json.dump(new_data, f)
