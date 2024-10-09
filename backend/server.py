@@ -4,14 +4,14 @@ from contextlib import asynccontextmanager
 from database import Annotation, Dataset, Problem, User
 from fastapi import Depends, FastAPI, HTTPException, Security
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import APIKeyHeader
+from fastapi.security import APIKeyCookie, APIKeyHeader
 from sqlmodel import Session, SQLModel, create_engine, select
 
 engine = None
 
 logger = logging.getLogger("uvicorn.error")
 
-api_key_header = APIKeyHeader(name="Authorization")
+api_key_header = APIKeyCookie(name="Authorization")
 
 
 @asynccontextmanager
@@ -57,6 +57,10 @@ async def get_api_user(api_key: str = Security(api_key_header)) -> User:
     if user is None:
         raise HTTPException(status_code=403, detail="Could not validate API key")
     return user
+
+
+async def login():
+    pass
 
 
 @app.get("/datasets")
