@@ -1,5 +1,5 @@
 import { Box, ChakraProvider } from '@chakra-ui/react';
-import React from 'react';
+import React, { useState } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import DatasetsPage from './pages/DatasetsPage';
 import LoginPage from './pages/LoginPage';
@@ -11,12 +11,19 @@ const PrivateRoute = ({ children }) => {
 };
 
 function App() {
+    const [apiKey, setApiKey] = useState(localStorage.getItem('apiKey') || '');
+
+    const handleLogin = (key) => {
+        setApiKey(key);
+        localStorage.setItem('apiKey', key);
+    };
+
     return (
         <ChakraProvider>
             <Router>
                 <Box minHeight="100vh" bg="gray.50">
                     <Routes>
-                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
                         <Route path="/" element={
                             <PrivateRoute>
                                 <DatasetsPage />

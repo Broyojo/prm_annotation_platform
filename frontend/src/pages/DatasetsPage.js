@@ -1,4 +1,4 @@
-import { Box, Heading, SimpleGrid, Spinner } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, SimpleGrid, Spinner } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DatasetCard from '../components/DatasetCard';
@@ -12,28 +12,41 @@ const DatasetsPage = () => {
 
     useEffect(() => {
         if (apiKey) {
-            setLoading(true);
-            fetch('http://127.0.0.1:8000/datasets', {
+            fetchDatasets();
+        }
+    }, [apiKey]);
+
+    const fetchDatasets = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch('http://127.0.0.1:8000/datasets', {
                 method: 'GET',
                 headers: {
                     'x-key': apiKey
                 }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    setDatasets(data);
-                    setLoading(false);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    setLoading(false);
-                });
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setDatasets(data);
+            } else {
+                // If the API key is invalid, clear it and force re-login
+                handleLogout();
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
-    }, [apiKey]);
+        setLoading(false);
+    };
 
     const handleLogin = (key) => {
         setApiKey(key);
         localStorage.setItem('apiKey', key);
+    };
+
+    const handleLogout = () => {
+        setApiKey('');
+        localStorage.removeItem('apiKey');
+        setDatasets([]);
     };
 
     const handleDatasetClick = (dataset) => {
@@ -54,9 +67,14 @@ const DatasetsPage = () => {
 
     return (
         <Box p={6}>
-            <Heading as="h1" size="xl" mb={6}>
-                Dataset List
-            </Heading>
+            <Flex justifyContent="space-between" alignItems="center" mb={6}>
+                <Heading as="h1" size="xl">
+                    Dataset List
+                </Heading>
+                <Button onClick={handleLogout} colorScheme="red">
+                    Logout
+                </Button>
+            </Flex>
             <SimpleGrid columns={[1, 2, 3]} spacing={8}>
                 {datasets.map((dataset) => (
                     <DatasetCard
