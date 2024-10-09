@@ -11,7 +11,7 @@ engine = None
 
 logger = logging.getLogger("uvicorn.error")
 
-api_key_header = APIKeyCookie(name="Authorization")
+cookie_scheme = APIKeyCookie(name="session")
 
 
 @asynccontextmanager
@@ -50,7 +50,12 @@ async def index():
     return users
 
 
-async def get_api_user(api_key: str = Security(api_key_header)) -> User:
+@app.get("/items/")
+async def read_items(session: str = Depends(cookie_scheme)):
+    return {"session": session}
+
+
+async def get_api_user(api_key: str = Security(cookie_scheme)) -> User:
     with Session(engine) as session:
         query = select(User).where(User.api_key == api_key)
     user = session.exec(query).first()
