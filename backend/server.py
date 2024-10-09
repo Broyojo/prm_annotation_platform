@@ -66,6 +66,17 @@ async def get_datasets(user: User = Depends(authenticate_user)) -> list[Dataset]
         return list(session.exec(query))
 
 
+@app.get("/datasets/{dataset_id}")
+async def get_dataset(
+    dataset_id: int, user: User = Depends(authenticate_user)
+) -> Dataset:
+    with Session(engine) as session:
+        dataset = session.get(Dataset, dataset_id)
+        if not dataset:
+            raise HTTPException(status_code=404, detail="Dataset not found")
+        return dataset
+
+
 @app.get("/datasets/{dataset_id}/problems")
 async def get_problems(
     dataset_id: int, user: User = Depends(authenticate_user)
@@ -75,28 +86,26 @@ async def get_problems(
         return list(session.exec(query))
 
 
-@app.get("/datasets/{dataset_id}/problems_paginated")
-async def get_problems_paginated(
-    dataset_id: int,
-    page: int = Query(1, ge=1),
-    page_size: int = Query(10, ge=1, le=100),
-    user: User = Depends(authenticate_user),
+@app.get("/datasets/{dataset_id}/problems/{problem_index}")
+async def get_problem(
+    dataset_id: int, problem_index: int, user: User = Depends(authenticate_user)
 ) -> dict:
     with Session(engine) as session:
         total_query = select(Problem).where(Problem.dataset_id == dataset_id)
-        total = len(list(session.exec(total_query)))
+        total_problems = len(list(session.exec(total_query)))
+
+        if problem_index < 0 or problem_index >= total_problems:
+            raise HTTPException(status_code=404, detail="Problem not found")
 
         query = (
             select(Problem)
             .where(Problem.dataset_id == dataset_id)
-            .offset((page - 1) * page_size)
-            .limit(page_size)
+            .offset(problem_index)
+            .limit(1)
         )
-        problems = list(session.exec(query))
+        problem = session.exec(query).first()
 
-        return {
-            "total": total,
-            "page": page,
-            "page_size": page_size,
-            "problems": problems,
-        }
+        if not problem:
+            raise HTTPException(status_code=404, detail="Problem not found")
+
+        return {"total_problems": total_problems, "problem": problem}
