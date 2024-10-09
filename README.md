@@ -20,4 +20,5 @@ Researchers:
 
 Engineers:
 1. As an engineer, I want unit testing and the code should be easy to read and functional.
-2. There should be decent documentation.
+2. As an engineer, There should be decent documentation.
+3. As an engineer, there should be comprehensive error handling.
