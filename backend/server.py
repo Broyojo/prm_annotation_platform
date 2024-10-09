@@ -4,14 +4,14 @@ from contextlib import asynccontextmanager
 from database import Annotation, Dataset, Problem, User
 from fastapi import Depends, FastAPI, HTTPException, Security
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import APIKeyCookie, APIKeyHeader
+from fastapi.security import APIKeyHeader
 from sqlmodel import Session, SQLModel, create_engine, select
 
 engine = None
 
 logger = logging.getLogger("uvicorn.error")
 
-cookie_scheme = APIKeyCookie(name="session")
+header_scheme = APIKeyHeader(name="x-key")
 
 
 @asynccontextmanager
@@ -50,12 +50,7 @@ async def index():
     return users
 
 
-@app.get("/items/")
-async def read_items(session: str = Depends(cookie_scheme)):
-    return {"session": session}
-
-
-async def get_api_user(api_key: str = Security(cookie_scheme)) -> User:
+async def authenticate_user(api_key: str = Security(header_scheme)) -> User:
     with Session(engine) as session:
         query = select(User).where(User.api_key == api_key)
     user = session.exec(query).first()
@@ -64,19 +59,8 @@ async def get_api_user(api_key: str = Security(cookie_scheme)) -> User:
     return user
 
 
-async def login():
-    pass
-
-
 @app.get("/datasets")
-async def get_datasets(user: User = Depends(get_api_user)) -> list[Dataset]:
+async def get_datasets(user: User = Depends(authenticate_user)) -> list[Dataset]:
     with Session(engine) as session:
         query = select(Dataset)
-        return list(session.exec(query))
-
-
-@app.get("/users")
-async def get_users() -> list[User]:
-    with Session(engine) as session:
-        query = select(User)
         return list(session.exec(query))
