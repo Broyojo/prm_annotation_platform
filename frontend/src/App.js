@@ -1,4 +1,5 @@
 import { Box, ChakraProvider } from '@chakra-ui/react';
+import 'katex/dist/katex.min.css';
 import React, { useState } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import DatasetsPage from './pages/DatasetsPage';

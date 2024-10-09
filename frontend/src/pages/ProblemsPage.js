@@ -1,8 +1,13 @@
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, Grid, GridItem, Heading, Spinner, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Grid, GridItem, Heading, Spinner } from '@chakra-ui/react';
+import MarkdownIt from 'markdown-it';
+import mk from 'markdown-it-katex';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import StepCardWithRating from '../components/StepCardWithRating';
+
+const md = new MarkdownIt();
+md.use(mk);
 
 const ProblemsPage = () => {
     const { datasetId } = useParams();
@@ -69,6 +74,10 @@ const ProblemsPage = () => {
         navigate('/');
     };
 
+    const renderMarkdown = (content) => {
+        return { __html: md.render(content) };
+    };
+
     if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -97,11 +106,11 @@ const ProblemsPage = () => {
                 <GridItem overflowY="auto">
                     <Box mb={6}>
                         <Heading as="h2" size="lg" mb={2}>Question:</Heading>
-                        <Text>{problem.question}</Text>
+                        <Box dangerouslySetInnerHTML={renderMarkdown(problem.question)} fontSize="inherit" lineHeight="inherit" />
                     </Box>
                     <Box mb={6}>
                         <Heading as="h2" size="lg" mb={2}>Answer:</Heading>
-                        <Text>{problem.answer}</Text>
+                        <Box dangerouslySetInnerHTML={renderMarkdown(problem.answer)} />
                     </Box>
                     <Flex justifyContent="space-between" mt={4}>
                         <Button onClick={handlePreviousProblem} disabled={currentProblemIndex === 0}>
