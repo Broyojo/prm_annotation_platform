@@ -1,6 +1,7 @@
 Current plan:
-1. Make annotation platform first (with hardcoded users and api key login) - just make enough for the demo on Thursday
-2. Then, add OAuth2 sign in with Huggingface or Github 
+1. Make annotation platform first with no user login system - just for the demo on friday
+2. add user login system with API key and hardcoded users
+3. add OAuth2 sign in with Huggingface or Github 
 
 ## Functional Requirements
 
