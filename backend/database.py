@@ -1,7 +1,6 @@
 import os
 from typing import Optional
 
-import nltk
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
 
 

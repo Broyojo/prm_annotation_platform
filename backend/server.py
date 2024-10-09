@@ -17,11 +17,10 @@ header_scheme = APIKeyHeader(name="x-key")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global engine
-    logger.info("Running startup code")
+    logger.info("Loading database")
     engine = create_engine("sqlite:///test_database.db")
     SQLModel.metadata.create_all(engine)
     yield
-    logger.info("Running cleanup code")
 
 
 app = FastAPI(lifespan=lifespan)
