@@ -1,6 +1,7 @@
 import { CheckIcon, CloseIcon, InfoIcon, WarningIcon } from '@chakra-ui/icons';
 import { Box, Button, ButtonGroup, Text, useColorModeValue } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import KaTeX from './KaTeX';
 
 const StepCardWithRating = ({ step, index }) => {
     const [rating, setRating] = useState(null);
@@ -51,7 +52,7 @@ const StepCardWithRating = ({ step, index }) => {
             >
                 Step {index + 1}
             </Box>
-            <Text fontSize="md" mb={4} color={textColor}>{step}</Text>
+            <Text fontSize="md" mb={4} color={textColor}><KaTeX>{step}</KaTeX></Text>
             <ButtonGroup size="sm" isAttached variant="outline">
                 {getRatingButton("Good", <CheckIcon />, "green")}
                 {getRatingButton("Neutral", <InfoIcon />, "blue")}
