@@ -1,8 +1,9 @@
+import json
 import logging
 from contextlib import asynccontextmanager
 
 from database import Annotation, Dataset, Problem, User
-from fastapi import Depends, FastAPI, HTTPException, Security
+from fastapi import Depends, FastAPI, HTTPException, Query, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 from sqlmodel import Session, SQLModel, create_engine, select
@@ -63,3 +64,39 @@ async def get_datasets(user: User = Depends(authenticate_user)) -> list[Dataset]
     with Session(engine) as session:
         query = select(Dataset)
         return list(session.exec(query))
+
+
+@app.get("/datasets/{dataset_id}/problems")
+async def get_problems(
+    dataset_id: int, user: User = Depends(authenticate_user)
+) -> list[Problem]:
+    with Session(engine) as session:
+        query = select(Problem).where(Problem.dataset_id == dataset_id)
+        return list(session.exec(query))
+
+
+@app.get("/datasets/{dataset_id}/problems_paginated")
+async def get_problems_paginated(
+    dataset_id: int,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    user: User = Depends(authenticate_user),
+) -> dict:
+    with Session(engine) as session:
+        total_query = select(Problem).where(Problem.dataset_id == dataset_id)
+        total = len(list(session.exec(total_query)))
+
+        query = (
+            select(Problem)
+            .where(Problem.dataset_id == dataset_id)
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+        )
+        problems = list(session.exec(query))
+
+        return {
+            "total": total,
+            "page": page,
+            "page_size": page_size,
+            "problems": problems,
+        }
