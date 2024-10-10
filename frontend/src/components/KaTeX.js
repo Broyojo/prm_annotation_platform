@@ -4,10 +4,20 @@ import React from 'react';
 
 const KaTeX = ({ children, block = false, errorColor = '#cc0000' }) => {
     const renderKaTeX = (content) => {
-        return content.split(/(\$\$[\s\S]*?\$\$|\$[\s\S]*?\$)/).map((text, index) => {
+        return content.split(/(\$\$[\s\S]*?\$\$|\$[\s\S]*?\$|\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\])/
+        ).map((text, index) => {
             if (index % 2 === 1) {
-                const isDisplayMode = text.startsWith('$$');
-                const formula = isDisplayMode ? text.slice(2, -2) : text.slice(1, -1);
+                let isDisplayMode = text.startsWith('$$') || text.startsWith('\\[');
+                let formula;
+                if (text.startsWith('$$')) {
+                    formula = text.slice(2, -2);
+                } else if (text.startsWith('\\[')) {
+                    formula = text.slice(2, -2);
+                } else if (text.startsWith('\\(')) {
+                    formula = text.slice(2, -2);
+                } else {
+                    formula = text.slice(1, -1);
+                }
                 return (
                     <span
                         key={index}
@@ -23,10 +33,10 @@ const KaTeX = ({ children, block = false, errorColor = '#cc0000' }) => {
             }
             return (
                 <React.Fragment key={index}>
-                    {text.split('\n').map((line, lineIndex) => (
+                    {text.split('\n').map((line, lineIndex, array) => (
                         <React.Fragment key={lineIndex}>
                             {line}
-                            {lineIndex < text.split('\n').length - 1 && <br />}
+                            {lineIndex < array.length - 1 && <br />}
                         </React.Fragment>
                     ))}
                 </React.Fragment>
