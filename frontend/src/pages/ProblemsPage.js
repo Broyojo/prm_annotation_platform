@@ -2,7 +2,7 @@ import { ArrowBackIcon } from '@chakra-ui/icons';
 import { Box, Button, Flex, Grid, GridItem, Heading, Spinner } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import KaTeX from '../components/KaTeX'; // Import the new KaTeX component
+import KaTeX from '../components/KaTeX';
 import StepCardWithRating from '../components/StepCardWithRating';
 
 const ProblemsPage = () => {
@@ -72,9 +72,9 @@ const ProblemsPage = () => {
 
     if (loading) {
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+            <Flex justifyContent="center" alignItems="center" height="100vh">
                 <Spinner size="xl" />
-            </Box>
+            </Flex>
         );
     }
 
@@ -83,44 +83,47 @@ const ProblemsPage = () => {
     }
 
     return (
-        <Box p={6}>
-            <Button
-                onClick={handleBackToDatasetsPage}
-                mb={4}
-                leftIcon={<ArrowBackIcon />}
-            >
-                Back to Datasets
-            </Button>
-            <Heading as="h1" size="xl" mb={6}>
-                {datasetName} - Problem {currentProblemIndex + 1} of {totalProblems}
-            </Heading>
-            <Grid templateColumns="repeat(2, 1fr)" gap={6} height="calc(100vh - 100px)">
-                <GridItem overflowY="auto">
-                    <Box mb={6}>
-                        <Heading as="h2" size="lg" mb={2}>Question:</Heading>
+        <Flex flexDirection="column" height="100vh" overflow="hidden">
+            <Box p={4} borderBottom="1px" borderColor="gray.200">
+                <Button
+                    onClick={handleBackToDatasetsPage}
+                    mb={2}
+                    leftIcon={<ArrowBackIcon />}
+                    size="sm"
+                >
+                    Back to Datasets
+                </Button>
+                <Heading as="h1" size="lg">
+                    {datasetName} - Problem {currentProblemIndex + 1} of {totalProblems}
+                </Heading>
+            </Box>
+            <Grid templateColumns="repeat(2, 1fr)" gap={4} flex="1" minHeight={0}>
+                <GridItem overflowY="auto" p={4} borderRight="1px" borderColor="gray.200">
+                    <Box mb={4}>
+                        <Heading as="h2" size="md" mb={2}>Question:</Heading>
                         <KaTeX>{problem.question}</KaTeX>
                     </Box>
-                    <Box mb={6}>
-                        <Heading as="h2" size="lg" mb={2}>Answer:</Heading>
+                    <Box>
+                        <Heading as="h2" size="md" mb={2}>Answer:</Heading>
                         <KaTeX>{problem.answer}</KaTeX>
                     </Box>
-                    <Flex justifyContent="space-between" mt={4}>
-                        <Button onClick={handlePreviousProblem} disabled={currentProblemIndex === 0}>
-                            Previous Problem
-                        </Button>
-                        <Button onClick={handleNextProblem} disabled={currentProblemIndex === totalProblems - 1}>
-                            Next Problem
-                        </Button>
-                    </Flex>
                 </GridItem>
-                <GridItem overflowY="auto">
-                    <Heading as="h2" size="lg" mb={4}>Model Answer Steps:</Heading>
+                <GridItem overflowY="auto" p={4}>
+                    <Heading as="h2" size="md" mb={4}>Model Answer Steps:</Heading>
                     {JSON.parse(problem.steps).map((step, index) => (
                         <StepCardWithRating key={index} step={step} index={index} />
                     ))}
                 </GridItem>
             </Grid>
-        </Box>
+            <Flex justifyContent="space-between" p={4} borderTop="1px" borderColor="gray.200">
+                <Button onClick={handlePreviousProblem} disabled={currentProblemIndex === 0} size="sm">
+                    Previous Problem
+                </Button>
+                <Button onClick={handleNextProblem} disabled={currentProblemIndex === totalProblems - 1} size="sm">
+                    Next Problem
+                </Button>
+            </Flex>
+        </Flex>
     );
 };
 
