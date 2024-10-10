@@ -4,10 +4,11 @@ import React from 'react';
 
 const KaTeX = ({ children, block = false, errorColor = '#cc0000' }) => {
     const renderKaTeX = (content) => {
-        return content.split(/(\$\$[\s\S]*?\$\$|\$[\s\S]*?\$|\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\])/
+        return content.split(/(\$\$[\s\S]*?\$\$|\$[\s\S]*?\$|\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]|\\begin\{align\*\}[\s\S]*?\\end\{align\*\}|\\begin\{equation\*\}[\s\S]*?\\end\{equation\*\})/
         ).map((text, index) => {
             if (index % 2 === 1) {
-                let isDisplayMode = text.startsWith('$$') || text.startsWith('\\[');
+                let isDisplayMode = text.startsWith('$$') || text.startsWith('\\[') ||
+                    text.startsWith('\\begin{align*}') || text.startsWith('\\begin{equation*}');
                 let formula;
                 if (text.startsWith('$$')) {
                     formula = text.slice(2, -2);
@@ -15,6 +16,8 @@ const KaTeX = ({ children, block = false, errorColor = '#cc0000' }) => {
                     formula = text.slice(2, -2);
                 } else if (text.startsWith('\\(')) {
                     formula = text.slice(2, -2);
+                } else if (text.startsWith('\\begin{align*}') || text.startsWith('\\begin{equation*}')) {
+                    formula = text;
                 } else {
                     formula = text.slice(1, -1);
                 }
