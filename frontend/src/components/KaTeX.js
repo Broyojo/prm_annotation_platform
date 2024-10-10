@@ -21,7 +21,16 @@ const KaTeX = ({ children, block = false, errorColor = '#cc0000' }) => {
                     />
                 );
             }
-            return <span key={index}>{text}</span>;
+            return (
+                <React.Fragment key={index}>
+                    {text.split('\n').map((line, lineIndex) => (
+                        <React.Fragment key={lineIndex}>
+                            {line}
+                            {lineIndex < text.split('\n').length - 1 && <br />}
+                        </React.Fragment>
+                    ))}
+                </React.Fragment>
+            );
         });
     };
 
