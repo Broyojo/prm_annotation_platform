@@ -1,8 +1,9 @@
-import { ArrowBackIcon, ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, Grid, GridItem, Heading, HStack, Input, Spinner, Text } from '@chakra-ui/react';
+import { ArrowBackIcon } from '@chakra-ui/icons';
+import { Box, Button, Flex, Grid, GridItem, Heading, Spinner, useBreakpointValue } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import KaTeX from '../components/KaTeX';
+import Pagination from '../components/Pagination';
 import StepCardWithRating from '../components/StepCardWithRating';
 
 const ProblemsPage = () => {
@@ -13,6 +14,8 @@ const ProblemsPage = () => {
     const [datasetName, setDatasetName] = useState('');
     const [editableNumber, setEditableNumber] = useState('');
     const navigate = useNavigate();
+
+    const middleElementsCount = useBreakpointValue({ base: 3, md: 5, lg: 7 });
 
     useEffect(() => {
         fetchDatasetInfo();
@@ -96,63 +99,6 @@ const ProblemsPage = () => {
         }
     };
 
-    const renderProblemSelectionMenu = () => {
-        const currentProblem = Number(problemId);
-        const items = [];
-
-        const addButton = (index) => {
-            if (index === currentProblem) {
-                items.push(
-                    <form key={index} onSubmit={handleEditableNumberSubmit}>
-                        <Input
-                            size="sm"
-                            width="60px"
-                            textAlign="center"
-                            value={editableNumber}
-                            onChange={handleEditableNumberChange}
-                            onBlur={handleEditableNumberSubmit}
-                        />
-                    </form>
-                );
-            } else {
-                items.push(
-                    <Button
-                        key={index}
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleProblemSelect(index)}
-                    >
-                        {index + 1}
-                    </Button>
-                );
-            }
-        };
-
-        const addEllipsis = (key) => {
-            items.push(<Text key={key}>...</Text>);
-        };
-
-        // Always add the first problem
-        addButton(0);
-
-        if (currentProblem > 3) addEllipsis('start');
-
-        // Add 5 problems in the middle
-        const start = Math.max(1, Math.min(currentProblem - 2, totalProblems - 6));
-        const end = Math.min(start + 4, totalProblems - 2);
-
-        for (let i = start; i <= end; i++) {
-            addButton(i);
-        }
-
-        if (currentProblem < totalProblems - 4) addEllipsis('end');
-
-        // Always add the last problem
-        if (totalProblems > 1) addButton(totalProblems - 1);
-
-        return items;
-    };
-
     if (loading) {
         return (
             <Flex justifyContent="center" alignItems="center" height="100vh">
@@ -199,23 +145,15 @@ const ProblemsPage = () => {
                 </GridItem>
             </Grid>
             <Flex justifyContent="center" alignItems="center" p={4} borderTop="1px" borderColor="gray.200">
-                <HStack spacing={1}>
-                    <Button
-                        size="sm"
-                        onClick={handlePreviousProblem}
-                        isDisabled={Number(problemId) === 0}
-                    >
-                        <ChevronLeftIcon /> Previous Problem
-                    </Button>
-                    {renderProblemSelectionMenu()}
-                    <Button
-                        size="sm"
-                        onClick={handleNextProblem}
-                        isDisabled={Number(problemId) === totalProblems - 1}
-                    >
-                        Next Problem <ChevronRightIcon />
-                    </Button>
-                </HStack>
+                <Pagination
+                    currentPage={Number(problemId)}
+                    totalPages={totalProblems}
+                    onPageChange={handleProblemSelect}
+                    editableNumber={editableNumber}
+                    onEditableNumberChange={handleEditableNumberChange}
+                    onEditableNumberSubmit={handleEditableNumberSubmit}
+                    middleElementsCount={middleElementsCount}
+                />
             </Flex>
         </Flex>
     );
