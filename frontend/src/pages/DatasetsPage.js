@@ -50,7 +50,7 @@ const DatasetsPage = () => {
     };
 
     const handleDatasetClick = (dataset) => {
-        navigate(`/datasets/${dataset.id}/problems`);
+        navigate(`/datasets/${dataset.id}/problems/0`);
     };
 
     if (!apiKey) {

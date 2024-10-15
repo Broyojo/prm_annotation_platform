@@ -27,3 +27,13 @@ Engineers:
 1. As an engineer, I want unit testing and the code should be easy to read and functional.
 2. As an engineer, There should be decent documentation.
 3. As an engineer, there should be comprehensive error handling.
+
+
+# URL Schema
+- Datasets page (shows all datasets and their statuses): /api/datasets
+- Problem page: /api/datsets/{i}/problem/{j}
+  - annotations for the problem: /api/datasets/{i}/problems/{j}/annotations
+    - specific annotation for the problem: /api/datasets/{i}/problems/{j}/annotations/{k}
+- Users page (shows all users): /api/users/
+  - User annotations page (lists all user's annotations): /api/users/{i}/annotations
+    - Specific user annotation /api/users/{i}/annotations/{j}

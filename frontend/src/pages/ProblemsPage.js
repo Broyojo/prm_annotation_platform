@@ -6,9 +6,8 @@ import KaTeX from '../components/KaTeX';
 import StepCardWithRating from '../components/StepCardWithRating';
 
 const ProblemsPage = () => {
-    const { datasetId } = useParams();
+    const { datasetId, problemId } = useParams();
     const [problem, setProblem] = useState(null);
-    const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
     const [totalProblems, setTotalProblems] = useState(0);
     const [loading, setLoading] = useState(false);
     const [datasetName, setDatasetName] = useState('');
@@ -17,7 +16,7 @@ const ProblemsPage = () => {
     useEffect(() => {
         fetchDatasetInfo();
         fetchProblem();
-    }, [datasetId, currentProblemIndex]);
+    }, [datasetId, problemId]);
 
     const fetchDatasetInfo = async () => {
         try {
@@ -40,7 +39,7 @@ const ProblemsPage = () => {
     const fetchProblem = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8000/datasets/${datasetId}/problems/${currentProblemIndex}`, {
+            const response = await fetch(`http://127.0.0.1:8000/datasets/${datasetId}/problems/${problemId}`, {
                 headers: {
                     'x-key': localStorage.getItem('apiKey')
                 }
@@ -59,11 +58,15 @@ const ProblemsPage = () => {
     };
 
     const handleNextProblem = () => {
-        setCurrentProblemIndex(prev => Math.min(prev + 1, totalProblems - 1));
+        if (Number(problemId) < totalProblems - 1) {
+            navigate(`/datasets/${datasetId}/problems/${Number(problemId) + 1}`);
+        }
     };
 
     const handlePreviousProblem = () => {
-        setCurrentProblemIndex(prev => Math.max(prev - 1, 0));
+        if (Number(problemId) > 0) {
+            navigate(`/datasets/${datasetId}/problems/${Number(problemId) - 1}`);
+        }
     };
 
     const handleBackToDatasetsPage = () => {
@@ -94,7 +97,7 @@ const ProblemsPage = () => {
                     Back to Datasets
                 </Button>
                 <Heading as="h1" size="lg">
-                    {datasetName} - Problem {currentProblemIndex + 1} of {totalProblems}
+                    {datasetName} - Problem ID {Number(problemId)} of {totalProblems}
                 </Heading>
             </Box>
             <Grid templateColumns="repeat(2, 1fr)" gap={4} flex="1" minHeight={0}>
@@ -116,10 +119,10 @@ const ProblemsPage = () => {
                 </GridItem>
             </Grid>
             <Flex justifyContent="space-between" p={4} borderTop="1px" borderColor="gray.200">
-                <Button onClick={handlePreviousProblem} disabled={currentProblemIndex === 0} size="sm">
+                <Button onClick={handlePreviousProblem} disabled={Number(problemId) === 0} size="sm">
                     Previous Problem
                 </Button>
-                <Button onClick={handleNextProblem} disabled={currentProblemIndex === totalProblems - 1} size="sm">
+                <Button onClick={handleNextProblem} disabled={Number(problemId) === totalProblems - 1} size="sm">
                     Next Problem
                 </Button>
             </Flex>

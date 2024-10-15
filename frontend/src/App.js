@@ -30,7 +30,7 @@ function App() {
                                 <DatasetsPage />
                             </PrivateRoute>
                         } />
-                        <Route path="/datasets/:datasetId/problems" element={
+                        <Route path="/datasets/:datasetId/problems/:problemId" element={
                             <PrivateRoute>
                                 <ProblemsPage />
                             </PrivateRoute>
