@@ -69,18 +69,6 @@ const ProblemsPage = () => {
         navigate(`/datasets/${datasetId}/problems/${selectedProblemId}`);
     };
 
-    const handleNextProblem = () => {
-        if (Number(problemId) < totalProblems - 1) {
-            handleProblemSelect(Number(problemId) + 1);
-        }
-    };
-
-    const handlePreviousProblem = () => {
-        if (Number(problemId) > 0) {
-            handleProblemSelect(Number(problemId) - 1);
-        }
-    };
-
     const handleBackToDatasetsPage = () => {
         navigate('/');
     };
@@ -108,7 +96,7 @@ const ProblemsPage = () => {
     }
 
     if (!problem) {
-        return null;
+        return null; // TODO: send to some 404 page or send to last problem?
     }
 
     return (
