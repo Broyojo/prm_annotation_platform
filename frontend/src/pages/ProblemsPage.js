@@ -1,5 +1,5 @@
-import { ArrowBackIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, Grid, GridItem, Heading, Spinner } from '@chakra-ui/react';
+import { ArrowBackIcon, ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { Box, Button, Flex, Grid, GridItem, Heading, HStack, Input, Spinner, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import KaTeX from '../components/KaTeX';
@@ -11,12 +11,17 @@ const ProblemsPage = () => {
     const [totalProblems, setTotalProblems] = useState(0);
     const [loading, setLoading] = useState(false);
     const [datasetName, setDatasetName] = useState('');
+    const [editableNumber, setEditableNumber] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchDatasetInfo();
         fetchProblem();
     }, [datasetId, problemId]);
+
+    useEffect(() => {
+        setEditableNumber(String(Number(problemId) + 1));
+    }, [problemId]);
 
     const fetchDatasetInfo = async () => {
         try {
@@ -57,20 +62,95 @@ const ProblemsPage = () => {
         setLoading(false);
     };
 
+    const handleProblemSelect = (selectedProblemId) => {
+        navigate(`/datasets/${datasetId}/problems/${selectedProblemId}`);
+    };
+
     const handleNextProblem = () => {
         if (Number(problemId) < totalProblems - 1) {
-            navigate(`/datasets/${datasetId}/problems/${Number(problemId) + 1}`);
+            handleProblemSelect(Number(problemId) + 1);
         }
     };
 
     const handlePreviousProblem = () => {
         if (Number(problemId) > 0) {
-            navigate(`/datasets/${datasetId}/problems/${Number(problemId) - 1}`);
+            handleProblemSelect(Number(problemId) - 1);
         }
     };
 
     const handleBackToDatasetsPage = () => {
         navigate('/');
+    };
+
+    const handleEditableNumberChange = (e) => {
+        setEditableNumber(e.target.value);
+    };
+
+    const handleEditableNumberSubmit = (e) => {
+        e.preventDefault();
+        const newProblemId = Number(editableNumber) - 1;
+        if (newProblemId >= 0 && newProblemId < totalProblems) {
+            handleProblemSelect(newProblemId);
+        } else {
+            setEditableNumber(String(Number(problemId) + 1));
+        }
+    };
+
+    const renderProblemSelectionMenu = () => {
+        const currentProblem = Number(problemId);
+        const items = [];
+
+        const addButton = (index) => {
+            if (index === currentProblem) {
+                items.push(
+                    <form key={index} onSubmit={handleEditableNumberSubmit}>
+                        <Input
+                            size="sm"
+                            width="60px"
+                            textAlign="center"
+                            value={editableNumber}
+                            onChange={handleEditableNumberChange}
+                            onBlur={handleEditableNumberSubmit}
+                        />
+                    </form>
+                );
+            } else {
+                items.push(
+                    <Button
+                        key={index}
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleProblemSelect(index)}
+                    >
+                        {index + 1}
+                    </Button>
+                );
+            }
+        };
+
+        const addEllipsis = (key) => {
+            items.push(<Text key={key}>...</Text>);
+        };
+
+        // Always add the first problem
+        addButton(0);
+
+        if (currentProblem > 3) addEllipsis('start');
+
+        // Add 5 problems in the middle
+        const start = Math.max(1, Math.min(currentProblem - 2, totalProblems - 6));
+        const end = Math.min(start + 4, totalProblems - 2);
+
+        for (let i = start; i <= end; i++) {
+            addButton(i);
+        }
+
+        if (currentProblem < totalProblems - 4) addEllipsis('end');
+
+        // Always add the last problem
+        if (totalProblems > 1) addButton(totalProblems - 1);
+
+        return items;
     };
 
     if (loading) {
@@ -97,7 +177,7 @@ const ProblemsPage = () => {
                     Back to Datasets
                 </Button>
                 <Heading as="h1" size="lg">
-                    {datasetName} - Problem ID {Number(problemId)} of {totalProblems}
+                    {datasetName} - Problem {Number(problemId) + 1}
                 </Heading>
             </Box>
             <Grid templateColumns="repeat(2, 1fr)" gap={4} flex="1" minHeight={0}>
@@ -118,13 +198,24 @@ const ProblemsPage = () => {
                     ))}
                 </GridItem>
             </Grid>
-            <Flex justifyContent="space-between" p={4} borderTop="1px" borderColor="gray.200">
-                <Button onClick={handlePreviousProblem} disabled={Number(problemId) === 0} size="sm">
-                    Previous Problem
-                </Button>
-                <Button onClick={handleNextProblem} disabled={Number(problemId) === totalProblems - 1} size="sm">
-                    Next Problem
-                </Button>
+            <Flex justifyContent="center" alignItems="center" p={4} borderTop="1px" borderColor="gray.200">
+                <HStack spacing={1}>
+                    <Button
+                        size="sm"
+                        onClick={handlePreviousProblem}
+                        isDisabled={Number(problemId) === 0}
+                    >
+                        <ChevronLeftIcon /> Previous Problem
+                    </Button>
+                    {renderProblemSelectionMenu()}
+                    <Button
+                        size="sm"
+                        onClick={handleNextProblem}
+                        isDisabled={Number(problemId) === totalProblems - 1}
+                    >
+                        Next Problem <ChevronRightIcon />
+                    </Button>
+                </HStack>
             </Flex>
         </Flex>
     );
