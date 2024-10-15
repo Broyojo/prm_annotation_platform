@@ -13,7 +13,7 @@ const LoginPage = ({ onLogin }) => {
         if (apiKey.trim()) {
             setLoading(true);
             try {
-                const response = await fetch('http://127.0.0.1:8000/datasets', {
+                const response = await fetch('http://127.0.0.1:8000/api/datasets', {
                     method: 'GET',
                     headers: {
                         'x-key': apiKey

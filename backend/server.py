@@ -59,14 +59,14 @@ async def authenticate_user(api_key: str = Security(header_scheme)) -> User:
     return user
 
 
-@app.get("/datasets")
+@app.get("/api/datasets")
 async def get_datasets(user: User = Depends(authenticate_user)) -> list[Dataset]:
     with Session(engine) as session:
         query = select(Dataset)
         return list(session.exec(query))
 
 
-@app.get("/datasets/{dataset_id}")
+@app.get("/api/datasets/{dataset_id}")
 async def get_dataset(
     dataset_id: int, user: User = Depends(authenticate_user)
 ) -> Dataset:
@@ -77,7 +77,7 @@ async def get_dataset(
         return dataset
 
 
-@app.get("/datasets/{dataset_id}/problems")
+@app.get("/api/datasets/{dataset_id}/problems")
 async def get_problems(
     dataset_id: int, user: User = Depends(authenticate_user)
 ) -> list[Problem]:
@@ -86,7 +86,7 @@ async def get_problems(
         return list(session.exec(query))
 
 
-@app.get("/datasets/{dataset_id}/problems/{problem_index}")
+@app.get("/api/datasets/{dataset_id}/problems/{problem_index}")
 async def get_problem(
     dataset_id: int, problem_index: int, user: User = Depends(authenticate_user)
 ) -> dict:

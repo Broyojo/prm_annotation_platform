@@ -20,7 +20,7 @@ const ProblemsPage = () => {
 
     const fetchDatasetInfo = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/datasets/${datasetId}`, {
+            const response = await fetch(`http://127.0.0.1:8000/api/datasets/${datasetId}`, {
                 headers: {
                     'x-key': localStorage.getItem('apiKey')
                 }
@@ -39,7 +39,7 @@ const ProblemsPage = () => {
     const fetchProblem = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8000/datasets/${datasetId}/problems/${problemId}`, {
+            const response = await fetch(`http://127.0.0.1:8000/api/datasets/${datasetId}/problems/${problemId}`, {
                 headers: {
                     'x-key': localStorage.getItem('apiKey')
                 }
