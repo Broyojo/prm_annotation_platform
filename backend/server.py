@@ -108,7 +108,9 @@ class ProblemCreate(BaseModel):
     question: str
     answer: str
     llm_answer: str
-    steps: list[str]
+    steps: (
+        dict[int, str] | list[str]
+    )  # user can either submit dict or list of steps (either empty or fully labeled)
     is_correct: Optional[bool] = None
     solve_ratio: Optional[float] = None
     llm_name: Optional[str] = None
@@ -142,12 +144,18 @@ async def create_dataset(
         session.flush()
 
         for problem_data in dataset.problems:
+            steps = (
+                {i: step for i, step in enumerate(problem_data.steps)}
+                if type(problem_data.steps) == list
+                else problem_data.steps
+            )
+
             problem = Problem(
                 dataset_id=new_dataset.id,
                 question=problem_data.question,
                 answer=problem_data.answer,
                 llm_answer=problem_data.llm_answer,
-                steps=json.dumps(problem_data.steps),
+                steps=json.dumps(steps),
                 num_steps=len(problem_data.steps),
                 is_correct=problem_data.is_correct,
                 solve_ratio=problem_data.solve_ratio,

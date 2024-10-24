@@ -23,7 +23,7 @@ class User(SQLModel, table=True):
 
 class Annotation(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True, unique=True)
-    step_labels: str  # json list of label per step
+    step_labels: str  # json object of step index -> label (good, neural, bad, error realization, <no selection>)
 
     problem_id: Optional[int] = Field(default=None, foreign_key="problem.id")
     problem: "Problem" = Relationship(back_populates="annotations")
@@ -37,7 +37,7 @@ class Problem(SQLModel, table=True):
     question: str
     answer: str
     llm_answer: str
-    steps: str  # json list of steps
+    steps: str  # json object of step index -> step
     num_steps: int
     is_correct: Optional[bool] = None
     solve_ratio: Optional[float] = None
