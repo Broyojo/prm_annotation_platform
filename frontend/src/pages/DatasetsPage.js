@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import DatasetCard from '../components/DatasetCard';
 import LoginPage from './LoginPage';
 
+// TODO: show user's api key on the home page here
+
 const DatasetsPage = () => {
     const [datasets, setDatasets] = useState([]);
     const [apiKey, setApiKey] = useState(localStorage.getItem('apiKey') || '');

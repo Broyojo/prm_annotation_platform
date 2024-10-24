@@ -1,11 +1,14 @@
 import json
 import logging
 from contextlib import asynccontextmanager
+from datetime import datetime
+from typing import Optional
 
 from database import Annotation, Dataset, Problem, User
 from fastapi import Depends, FastAPI, HTTPException, Query, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
+from pydantic import BaseModel
 from sqlmodel import Session, SQLModel, create_engine, select
 
 engine = None
@@ -35,19 +38,9 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get("/api")
 async def index():
-    users = []
-    with Session(engine) as session:
-        problems = session.exec(
-            select(Problem).where(
-                Problem.solve_ratio is not None and Problem.solve_ratio < 0.1
-            )
-        )
-        for problem in problems:
-            for annotation in problem.annotations:
-                users.append(annotation.user.name)
-    return users
+    return "hi, please use the api routes :)"
 
 
 async def authenticate_user(api_key: str = Security(header_scheme)) -> User:
@@ -109,3 +102,72 @@ async def get_problem(
             raise HTTPException(status_code=404, detail="Problem not found")
 
         return {"total_problems": total_problems, "problem": problem}
+
+
+class ProblemCreate(BaseModel):
+    question: str
+    answer: str
+    llm_answer: str
+    steps: list[str]
+    is_correct: Optional[bool] = None
+    solve_ratio: Optional[float] = None
+    llm_name: Optional[str] = None
+    prompt_format: Optional[str] = None
+    final_answer: Optional[dict] = None
+    extra_metadata: dict = {}
+
+
+class DatasetCreate(BaseModel):
+    name: str
+    description: str
+    domain: str
+    extra_metadata: dict
+    problems: list[ProblemCreate]
+
+
+@app.post("/api/datasets")
+async def create_dataset(
+    dataset: DatasetCreate, user: User = Depends(authenticate_user)
+) -> Dataset:
+    with Session(engine) as session:
+        new_dataset = Dataset(
+            name=dataset.name,
+            domain=dataset.domain,
+            creator_id=user.id,
+            upload_date=datetime.now(),
+            description=dataset.description,
+            extra_metadata=json.dumps(dataset.extra_metadata),
+        )
+        session.add(new_dataset)
+        session.flush()
+
+        for problem_data in dataset.problems:
+            problem = Problem(
+                dataset_id=new_dataset.id,
+                question=problem_data.question,
+                answer=problem_data.answer,
+                llm_answer=problem_data.llm_answer,
+                steps=json.dumps(problem_data.steps),
+                num_steps=len(problem_data.steps),
+                is_correct=problem_data.is_correct,
+                solve_ratio=problem_data.solve_ratio,
+                llm_name=problem_data.llm_name,
+                prompt_format=problem_data.prompt_format,
+                final_answer=(
+                    json.dumps(problem_data.final_answer)
+                    if problem_data.final_answer
+                    else None
+                ),
+                extra_metadata=json.dumps(problem_data.extra_metadata),
+            )
+            session.add(problem)
+
+        try:
+            session.commit()
+            session.refresh(new_dataset)
+            return new_dataset
+        except Exception as e:
+            session.rollback()
+            raise HTTPException(
+                status_code=400, detail=f"Failed to create dataset: {str(e)}"
+            )

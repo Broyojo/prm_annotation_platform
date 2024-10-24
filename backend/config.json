@@ -1,0 +1,16 @@
+{
+    "users": [
+        {
+            "name": "David Andrews",
+            "permissions": "admin"
+        },
+        {
+            "name": "Alex Havrilla",
+            "permissions": "admin"
+        },
+        {
+            "name": "Aran Komatsuzaki",
+            "permissions": "admin"
+        }
+    ]
+}
