@@ -94,6 +94,13 @@ async def read_user_issues(user_id: int):
         return issues
 
 
+@app.post("/users")
+async def create_user(user: UserCreate):
+    with Session(engine) as session:
+        session.add(user)
+        session.commit()
+
+
 @app.get("/annotations", response_model=list[AnnotationPublic])
 async def read_annotations():
     with Session(engine) as session:
@@ -108,6 +115,25 @@ async def read_annotation(annotation_id: int):
         if not annotation:
             raise HTTPException(status_code=404, detail="Annotation not found")
         return annotation
+
+
+@app.post("/annotations")
+async def create_annotation(annotation: AnnotationCreate):
+    with Session(engine) as session:
+        if not annotation.creator_id:
+            raise HTTPException(status_code=422, detail="Cannot have null creator id")
+        creator = session.get(User, annotation.creator_id)
+        if not creator:
+            raise HTTPException(status_code=404, detail="Creator not found")
+
+        if not annotation.problem_id:
+            raise HTTPException(status_code=422, detail="Cannot have null problem id")
+        problem = session.get(Problem, annotation.problem_id)
+        if not problem:
+            raise HTTPException(status_code=404, detail="Problem not found")
+
+        session.add(annotation)
+        session.commit()
 
 
 @app.get("/issues", response_model=list[IssuePublic])
@@ -126,6 +152,25 @@ async def read_issue(issue_id: int):
         return issue
 
 
+@app.post("/issues")
+async def create_issue(issue: IssueCreate):
+    with Session(engine) as session:
+        if not issue.creator_id:
+            raise HTTPException(status_code=422, detail="Cannot have null creator id")
+        creator = session.get(User, issue.creator_id)
+        if not creator:
+            raise HTTPException(status_code=404, detail="Creator not found")
+
+        if not issue.problem_id:
+            raise HTTPException(status_code=422, detail="Cannot have null problem id")
+        problem = session.get(Problem, issue.problem_id)
+        if not problem:
+            raise HTTPException(status_code=404, detail="Problem not found")
+
+        session.add(issue)
+        session.commit()
+
+
 @app.get("/problems", response_model=list[ProblemPublic])
 async def read_problems():
     with Session(engine) as session:
@@ -140,6 +185,20 @@ async def read_problem(problem_id: int):
         if not problem:
             raise HTTPException(status_code=404, detail="Problem not found")
         return problem
+
+
+@app.post("/problems")
+async def create_problem(problem: ProblemCreate):
+    with Session(engine) as session:
+        if not problem.dataset_id:
+            raise HTTPException(status_code=422, detail="Cannot have null dataset id")
+
+        dataset = session.get(Dataset, problem.dataset_id)
+        if not dataset:
+            raise HTTPException(status_code=404, detail="Dataset not found")
+
+        session.add(problem)
+        session.commit()
 
 
 @app.get("/datasets", response_model=list[DatasetPublic])
@@ -168,6 +227,25 @@ async def read_dataset_problems(dataset_id: int):
         query = select(Problem).where(Problem.dataset_id == dataset_id)
         problems = session.exec(query).all()
         return problems
+
+
+@app.post("/datasets")
+async def create_dataset(dataset: DatasetCreate):
+    with Session(engine) as session:
+        session.add(dataset)
+        session.commit()
+
+
+@app.post("/datasets/{dataset_id}/problems")
+async def create_dataset_problem(dataset_id: int, problem: ProblemCreate):
+    with Session(engine) as session:
+        dataset = session.get(Dataset, dataset_id)
+        if not dataset:
+            raise HTTPException(status_code=404, detail="Dataset not found")
+
+        problem.dataset_id = dataset_id
+        session.add(problem)
+        session.commit()
 
 
 # @app.get("/datasets/{dataset_id}", response_model=UserPublic)

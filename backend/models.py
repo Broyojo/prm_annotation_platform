@@ -19,6 +19,10 @@ class User(UserBase, table=True):
     issues: List["Issue"] = Relationship(back_populates="creator")
 
 
+class UserCreate(UserBase):
+    pass
+
+
 class UserPublic(UserBase):
     id: int
     annotations: list["AnnotationPublic"]
@@ -46,6 +50,10 @@ class AnnotationPublic(AnnotationBase):
     id: int
 
 
+class AnnotationCreate(AnnotationBase):
+    pass
+
+
 class IssueBase(SQLModel):
     text: str
     resolved: bool = False
@@ -67,10 +75,14 @@ class IssuePublic(IssueBase):
     id: int
 
 
+class IssueCreate(IssueBase):
+    pass
+
+
 class ProblemBase(SQLModel):
     question: str
     answer: str
-    llm_answer: str
+    llm_answer: str = Field(unique=True)  # LLM answers *should* be unique
     steps: str = Field(sa_column=Column(JSON))
     num_steps: int
     is_correct: Optional[bool] = None
@@ -101,6 +113,10 @@ class ProblemPublic(ProblemBase):
     issues: list[IssuePublic]
 
 
+class ProblemCreate(ProblemBase):
+    pass
+
+
 class DatasetBase(SQLModel):
     name: str
     description: str
@@ -123,3 +139,7 @@ class Dataset(DatasetBase, table=True):
 
 class DatasetPublic(DatasetBase):
     id: int
+
+
+class DatasetCreate(DatasetBase):
+    pass
