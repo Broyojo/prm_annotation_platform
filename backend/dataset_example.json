@@ -1,0 +1,45 @@
+{
+    "name": "test dataset",
+    "description": "just a test dataset",
+    "domain": "math",
+    "created_at": "2024-10-25-00:00:00",
+    "last_modified": "2024-10-25-00:00:00",
+    "extra_metadata": {
+        "test_attribute": 3
+    },
+    "problems": [
+        {
+            "question": "test question",
+            "answer": "test answer",
+            "llm_answer": "test llm answer",
+            "steps": [
+                "test",
+                "llm",
+                "answer"
+            ],
+            "num_steps": 3,
+            "is_correct": true,
+            "solve_ratio": 0.9,
+            "llm_name": "gpt-4o",
+            "prompt_format": "this is a test prompt format",
+            "final_answer": null
+        },
+        {
+            "question": "test question 2",
+            "answer": "test answer 2",
+            "llm_answer": "test llm answer 2",
+            "steps": [
+                "test",
+                "llm",
+                "answer",
+                "2"
+            ],
+            "num_steps": 3,
+            "is_correct": true,
+            "solve_ratio": 0.9,
+            "llm_name": "gpt-4o",
+            "prompt_format": "this is a test prompt format 2",
+            "final_answer": null
+        }
+    ]
+}
