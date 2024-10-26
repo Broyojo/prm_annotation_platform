@@ -1,50 +1,73 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
+from pydantic import BaseModel
 from sqlmodel import JSON, Column, Field, Relationship, SQLModel
 
 
-class User(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True, unique=True)
+class UserBase(SQLModel):
     name: str = Field(unique=True)
     api_key: str = Field(unique=True)
     permissions: str = "standard"  # standard/admin
 
-    annotations: list["Annotation"] = Relationship(back_populates="creator")
-    datasets: list["Dataset"] = Relationship(back_populates="creator")
-    issues: list["Issue"] = Relationship(back_populates="creator")
 
-
-class Annotation(SQLModel, table=True):
+class User(UserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True, unique=True)
+
+    annotations: List["Annotation"] = Relationship(back_populates="creator")
+    datasets: List["Dataset"] = Relationship(back_populates="creator")
+    issues: List["Issue"] = Relationship(back_populates="creator")
+
+
+class UserPublic(UserBase):
+    id: int
+    annotations: list["AnnotationPublic"]
+    issues: list["IssuePublic"]
+
+
+class AnnotationBase(SQLModel):
     step_labels: str = Field(sa_column=Column(JSON))
     created_at: datetime
     last_modified: datetime
     complete: bool = False  # if all steps are labeled
 
     problem_id: Optional[int] = Field(default=None, foreign_key="problem.id")
-    problem: "Problem" = Relationship(back_populates="annotations")
-
     creator_id: Optional[int] = Field(default=None, foreign_key="user.id")
+
+
+class Annotation(AnnotationBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True, unique=True)
+
+    problem: "Problem" = Relationship(back_populates="annotations")
     creator: User = Relationship(back_populates="annotations")
 
 
-class Issue(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True, unique=True)
+class AnnotationPublic(AnnotationBase):
+    id: int
+
+
+class IssueBase(SQLModel):
     text: str
-    resolved: bool
+    resolved: bool = False
     created_at: datetime
     last_modified: datetime
 
     creator_id: Optional[int] = Field(default=None, foreign_key="user.id")
-    creator: User = Relationship(back_populates="issues")
-
     problem_id: Optional[int] = Field(default=None, foreign_key="problem.id")
+
+
+class Issue(IssueBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True, unique=True)
+
+    creator: User = Relationship(back_populates="issues")
     problem: "Problem" = Relationship(back_populates="issues")
 
 
-class Problem(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True, unique=True)
+class IssuePublic(IssueBase):
+    id: int
+
+
+class ProblemBase(SQLModel):
     question: str
     answer: str
     llm_answer: str
@@ -59,18 +82,26 @@ class Problem(SQLModel, table=True):
     created_at: datetime
     last_modified: datetime
 
-    annotations: list[Annotation] = Relationship(
+    dataset_id: Optional[int] = Field(default=None, foreign_key="dataset.id")
+
+
+class Problem(ProblemBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True, unique=True)
+
+    annotations: List[Annotation] = Relationship(
         back_populates="problem", cascade_delete=True
     )
-
-    issues: list["Issue"] = Relationship(back_populates="problem", cascade_delete=True)
-
-    dataset_id: Optional[int] = Field(default=None, foreign_key="dataset.id")
+    issues: List["Issue"] = Relationship(back_populates="problem", cascade_delete=True)
     dataset: "Dataset" = Relationship(back_populates="problems")
 
 
-class Dataset(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True, unique=True)
+class ProblemPublic(ProblemBase):
+    id: int
+    annotations: list[AnnotationPublic]
+    issues: list[IssuePublic]
+
+
+class DatasetBase(SQLModel):
     name: str
     description: str
     domain: str  # math, coding, agentic, etc.
@@ -79,8 +110,16 @@ class Dataset(SQLModel, table=True):
     extra_metadata: Optional[str] = Field(default=None, sa_column=Column(JSON))
 
     creator_id: Optional[int] = Field(default=None, foreign_key="user.id")
-    creator: User = Relationship(back_populates="datasets")
 
-    problems: list[Problem] = Relationship(
+
+class Dataset(DatasetBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True, unique=True)
+
+    creator: User = Relationship(back_populates="datasets")
+    problems: List[Problem] = Relationship(
         back_populates="dataset", cascade_delete=True
     )
+
+
+class DatasetPublic(DatasetBase):
+    id: int

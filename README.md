@@ -5,7 +5,7 @@
 ### Database Functional Requirements
 1. Users can create, read, update, and delete (CRUD) datasets, problems, annotations, and issues
 2. Users can download datasets, problems, annotations, and comments
-3. Version history is maintained through git
+3. Version history is maintained through git or temporal tables
 
 ### Interface Functional Requirements
 1. People should be able to efficiently find problems which haven't been annotated yet

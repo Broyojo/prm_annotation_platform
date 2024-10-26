@@ -8,7 +8,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.security import APIKeyHeader
-from models import Annotation, Dataset, Issue, Problem, User
+from models import *
 from pydantic import BaseModel
 from sqlmodel import Session, SQLModel, create_engine, distinct, func, select
 
@@ -44,11 +44,7 @@ async def index():
     return RedirectResponse(url="/docs")
 
 
-@app.get("/api", include_in_schema=False)
-async def api_index():
-    return RedirectResponse(url="/docs")
-
-
+# TODO: add this later
 async def authenticate_user(api_key: str = Security(header_scheme)) -> User:
     with Session(engine) as session:
         query = select(User).where(User.api_key == api_key)
@@ -58,8 +54,129 @@ async def authenticate_user(api_key: str = Security(header_scheme)) -> User:
     return user
 
 
-async def get_statistics(dataset_id: int) -> Stats:
-    pass
+@app.get("/users", response_model=list[UserPublic])
+async def read_users():
+    with Session(engine) as session:
+        users = session.exec(select(User)).all()
+        return users
+
+
+@app.get("/users/{user_id}", response_model=UserPublic)
+async def read_user(user_id: int):
+    with Session(engine) as session:
+        user = session.get(User, user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+
+
+@app.get("/users/{user_id}/annotations", response_model=list[AnnotationPublic])
+async def read_user_annotations(user_id: int):
+    with Session(engine) as session:
+        user = session.get(User, user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        query = select(Annotation).where(Annotation.creator_id == user_id)
+        annotations = session.exec(query).all()
+        return annotations
+
+
+@app.get("/users/{user_id}/issues", response_model=list[IssuePublic])
+async def read_user_issues(user_id: int):
+    with Session(engine) as session:
+        user = session.get(User, user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        query = select(Issue).where(Issue.creator_id == user_id)
+        issues = session.exec(query).all()
+        return issues
+
+
+@app.get("/annotations", response_model=list[AnnotationPublic])
+async def read_annotations():
+    with Session(engine) as session:
+        annotations = session.exec(select(Annotation)).all()
+        return annotations
+
+
+@app.get("/annotations/{annotation_id}", response_model=AnnotationPublic)
+async def read_annotation(annotation_id: int):
+    with Session(engine) as session:
+        annotation = session.get(Annotation, annotation_id)
+        if not annotation:
+            raise HTTPException(status_code=404, detail="Annotation not found")
+        return annotation
+
+
+@app.get("/issues", response_model=list[IssuePublic])
+async def read_issues():
+    with Session(engine) as session:
+        issues = session.exec(select(Issue)).all()
+        return issues
+
+
+@app.get("/issues/{issue_id}", response_model=IssuePublic)
+async def read_issue(issue_id: int):
+    with Session(engine) as session:
+        issue = session.get(Issue, issue_id)
+        if not issue:
+            raise HTTPException(status_code=404, detail="Issue not found")
+        return issue
+
+
+@app.get("/problems", response_model=list[ProblemPublic])
+async def read_problems():
+    with Session(engine) as session:
+        problems = session.exec(select(Problem)).all()
+        return problems
+
+
+@app.get("/problems/{problem_id}", response_model=ProblemPublic)
+async def read_problem(problem_id: int):
+    with Session(engine) as session:
+        problem = session.get(Problem, problem_id)
+        if not problem:
+            raise HTTPException(status_code=404, detail="Problem not found")
+        return problem
+
+
+@app.get("/datasets", response_model=list[DatasetPublic])
+async def read_datasets():
+    with Session(engine) as session:
+        datasets = session.exec(select(Dataset)).all()
+        return datasets
+
+
+@app.get("/datasets/{dataset_id}", response_model=DatasetPublic)
+async def read_dataset(dataset_id: int):
+    with Session(engine) as session:
+        dataset = session.get(Dataset, dataset_id)
+        if not dataset:
+            raise HTTPException(status_code=404, detail="Dataset not found")
+        return dataset
+
+
+@app.get("/datasets/{dataset_id}/problems", response_model=list[ProblemPublic])
+async def read_dataset_problems(dataset_id: int):
+    with Session(engine) as session:
+        dataset = session.get(Dataset, dataset_id)
+        if not dataset:
+            raise HTTPException(status_code=404, detail="Dataset not found")
+
+        query = select(Problem).where(Problem.dataset_id == dataset_id)
+        problems = session.exec(query).all()
+        return problems
+
+
+# @app.get("/datasets/{dataset_id}", response_model=UserPublic)
+# async def read_dataset(dataset_id: int):
+#     with Session(engine) as session:
+#         dataset = session.get(Dataset, dataset_id)
+#         if not dataset:
+#             raise HTTPException(status_code=404, detail="Dataset not found")
+#         return dataset
 
 
 # class DatasetWithStats(BaseModel):
