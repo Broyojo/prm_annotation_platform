@@ -1,13 +1,13 @@
 # PRM Annotation Platform
 
-## MVP Plans:
+## MVP Plans
 
-## Database Functional Requirements
-1. Users can create, read, update, and delete datasets, problems, annotations, and issues
+### Database Functional Requirements
+1. Users can create, read, update, and delete (CRUD) datasets, problems, annotations, and issues
 2. Users can download datasets, problems, annotations, and comments
 3. Version history is maintained through git
 
-## Interface Functional Requirements
+### Interface Functional Requirements
 1. People should be able to efficiently find problems which haven't been annotated yet
    * on the problems page, add a filter dropdown or something so it can do sorting, filtering, etc.
 2. Interface should show the question, answer, and model answer steps in correct LaTeX and rendering.
@@ -15,7 +15,7 @@
    * Should show all other metadata in a useful way
 3. Interface should show statistics which help people understand the current status of the overall annotation process.
 
-## API Requirements
+### API Requirements
 1. The API should be very simple, it should mirror the database operations pretty much.
    * The frontend should use the same API as the user-facing API.
 

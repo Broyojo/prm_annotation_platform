@@ -8,7 +8,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.security import APIKeyHeader
-from models import Annotation, Comment, Dataset, Problem, User
+from models import Annotation, Dataset, Issue, Problem, User
 from pydantic import BaseModel
 from sqlmodel import Session, SQLModel, create_engine, distinct, func, select
 
