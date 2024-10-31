@@ -138,7 +138,7 @@ def fake_problem(faker) -> Callable[..., ProblemCreate]:
 
 # User Tests
 def test_users(client: TestClient, fake_admin_user: User, fake_user):
-    users = [fake_user() for _ in range(random.randint(0, 10))]
+    users = [fake_user() for _ in range(random.randint(0, 100))]
 
     users_public = []
 
@@ -155,8 +155,6 @@ def test_users(client: TestClient, fake_admin_user: User, fake_user):
         assert data["name"] == user.name
         assert data["permissions"] == user.permissions
         assert data["api_key"] == user.api_key
-
-        users_public = []
 
     users.append(fake_admin_user)
 

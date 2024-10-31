@@ -35,7 +35,16 @@ async def read_users(
         (
             UserPublic.model_validate(user)
             if api_user.permissions == "admin" or api_user.id == user.id
-            else UserPublic.model_validate(user.model_dump(exclude={"api_key"}))
+            else UserPublic.model_validate(
+                {
+                    **user.model_dump(),
+                    "api_key": (
+                        ""
+                        if (api_user.permissions != "admin" and api_user.id != user.id)
+                        else user.api_key
+                    ),
+                }
+            )
         )
         for user in session.exec(select(User))
     ]
@@ -81,7 +90,16 @@ async def read_user(
     return (
         UserPublic.model_validate(user)
         if api_user.permissions == "admin" or api_user.id == user
-        else UserPublic.model_validate(user.model_dump(exclude={"api_key"}))
+        else UserPublic.model_validate(
+            {
+                **user.model_dump(),
+                "api_key": (
+                    ""
+                    if (api_user.permissions != "admin" and api_user.id != user.id)
+                    else user.api_key
+                ),
+            }
+        )
     )
 
 
@@ -104,40 +122,9 @@ async def update_user(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
 
-    db_user.sqlmodel_update(user_update)
-    db_user.last_modified = datetime.now()
-
     try:
-        session.commit()
-    except Exception as e:
-        session.rollback()
-        raise e
-
-    session.refresh(db_user)
-    return UserPublic.model_validate(db_user)
-
-
-@router.put("/users/{user_id}", response_model=UserPublic, tags=["Users"])
-async def overwrite_user(
-    user_id: int,
-    user_create: UserCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-) -> UserPublic:
-    if api_user.permissions != "admin" and api_user.id != user_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Non-admin user cannot overwrite user other than themselves",
-        )
-
-    db_user = session.get(User, user_id)
-    if db_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
-
-    try:
-        db_user.sqlmodel_update(user_create)
+        db_user.sqlmodel_update(user_update)
+        db_user.last_modified = datetime.now()
         session.commit()
     except Exception as e:
         session.rollback()
@@ -174,6 +161,28 @@ async def delete_user(
 
 
 @router.get(
+    "/users/{user_id}/problems", response_model=list[ProblemPublic], tags=["Users"]
+)
+async def read_user_problems(
+    user_id: int,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> list[ProblemPublic]:
+    db_user = session.get(User, user_id)
+    if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    problems = [
+        ProblemPublic.model_validate(problem)
+        for problem in session.exec(
+            select(Problem).where(Problem.creator_id == user_id)
+        )
+    ]
+    return problems
+
+
+@router.get(
     "/users/{user_id}/annotations",
     response_model=list[AnnotationPublic],
     tags=["Users"],
@@ -183,7 +192,8 @@ async def read_user_annotations(
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
 ) -> list[AnnotationPublic]:
-    if session.get(User, user_id) is None:
+    db_user = session.get(User, user_id)
+    if db_user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
@@ -202,7 +212,8 @@ async def read_user_issues(
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
 ) -> list[IssuePublic]:
-    if session.get(User, user_id) is None:
+    db_user = session.get(User, user_id)
+    if db_user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
@@ -211,17 +222,6 @@ async def read_user_issues(
         for issue in session.exec(select(Issue).where(Issue.creator_id == user_id))
     ]
     return issues
-
-
-@router.get(
-    "/users/{user_id}/problems", response_model=list[ProblemPublic], tags=["Users"]
-)
-async def read_user_problems(
-    user_id: int,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-) -> list[ProblemPublic]:
-    pass
 
 
 @router.get("/datasets", response_model=list[DatasetPublic], tags=["Datasets"])
@@ -241,7 +241,7 @@ async def create_dataset(
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
 ) -> DatasetPublic:
-    db_dataset = dataset.to_db_model(api_user.id)
+    db_dataset = dataset.to_db_model(creator_id=api_user.id)
 
     try:
         session.add(db_dataset)
@@ -270,16 +270,6 @@ async def read_dataset(
 
 @router.patch("/datasets/{dataset_id}", response_model=DatasetPublic, tags=["Datasets"])
 async def update_dataset(
-    dataset_id: int,
-    dataset: DatasetCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-) -> DatasetPublic:
-    pass
-
-
-@router.put("/datasets/{dataset_id}", response_model=DatasetPublic, tags=["Datasets"])
-async def overwrite_dataset(
     dataset_id: int,
     dataset: DatasetCreate,
     session: Session = Depends(get_session),
@@ -378,16 +368,6 @@ async def read_problem(
 
 @router.patch("/problems/{problem_id}", response_model=ProblemPublic, tags=["Problems"])
 async def update_problem(
-    problem_id: int,
-    problem: ProblemCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-) -> ProblemPublic:
-    pass
-
-
-@router.put("/problems/{problem_id}", response_model=ProblemPublic, tags=["Problems"])
-async def overwrite_problem(
     problem_id: int,
     problem: ProblemCreate,
     session: Session = Depends(get_session),
@@ -496,19 +476,6 @@ async def update_annotation(
     pass
 
 
-@router.put(
-    "/annotations/{annotation_id}",
-    response_model=AnnotationPublic,
-    tags=["Annotations"],
-)
-async def overwrite_annotation(
-    annotation_id: int,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-) -> AnnotationPublic:
-    pass
-
-
 @router.delete("/annotations/{annotation_id}", tags=["Annotations"])
 async def delete_annotation(
     annotation_id: int,
@@ -551,16 +518,6 @@ async def read_issue(
 
 @router.patch("/issues/{issue_id}", response_model=IssuePublic, tags=["Issues"])
 async def update_issue(
-    issue_id: int,
-    issue: IssueCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-) -> IssuePublic:
-    pass
-
-
-@router.put("/issues/{issue_id}", response_model=IssuePublic, tags=["Issues"])
-async def overwrite_issue(
     issue_id: int,
     issue: IssueCreate,
     session: Session = Depends(get_session),
