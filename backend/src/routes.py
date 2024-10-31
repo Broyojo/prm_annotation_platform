@@ -19,91 +19,220 @@ from models import (
     User,
     UserCreate,
     UserPublic,
+    UserUpdate,
 )
 from sqlmodel import Session, select
 
 router = APIRouter()
 
 
-# Annotation routes
-@router.get("/annotations", response_model=list[AnnotationPublic], tags=["Annotations"])
-async def read_annotations(
+@router.get("/users", response_model=list[UserPublic], tags=["Users"])
+async def read_users(
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> list[UserPublic]:
+    return [
+        (
+            UserPublic.model_validate(user)
+            if api_user.permissions == "admin" or api_user.id == user.id
+            else UserPublic.model_validate(user.model_dump(exclude={"api_key"}))
+        )
+        for user in session.exec(select(User))
+    ]
+
+
+@router.post("/users", response_model=UserPublic, tags=["Users"])
+async def create_user(
+    user_create: UserCreate,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> UserPublic:
+    if api_user.permissions != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Non-admin user cannot create user",
+        )
+
+    db_user = user_create.to_db_model()
+
+    try:
+        session.add(db_user)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+
+    session.refresh(db_user)
+    return UserPublic.model_validate(db_user)
+
+
+@router.get("/users/{user_id}", response_model=UserPublic, tags=["Users"])
+async def read_user(
+    user_id: int,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> UserPublic:
+    user = session.get(User, user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    return (
+        UserPublic.model_validate(user)
+        if api_user.permissions == "admin" or api_user.id == user
+        else UserPublic.model_validate(user.model_dump(exclude={"api_key"}))
+    )
+
+
+@router.patch("/users/{user_id}", response_model=UserPublic, tags=["Users"])
+async def update_user(
+    user_id: int,
+    user_update: UserUpdate,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> UserPublic:
+    if api_user.permissions != "admin" and api_user.id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Non-admin user cannot update user other than themselves",
+        )
+
+    db_user = session.get(User, user_id)
+    if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    db_user.sqlmodel_update(user_update)
+    db_user.last_modified = datetime.now()
+
+    try:
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+
+    session.refresh(db_user)
+    return UserPublic.model_validate(db_user)
+
+
+@router.put("/users/{user_id}", response_model=UserPublic, tags=["Users"])
+async def overwrite_user(
+    user_id: int,
+    user_create: UserCreate,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> UserPublic:
+    if api_user.permissions != "admin" and api_user.id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Non-admin user cannot overwrite user other than themselves",
+        )
+
+    db_user = session.get(User, user_id)
+    if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    try:
+        db_user.sqlmodel_update(user_create)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+
+    session.refresh(db_user)
+    return UserPublic.model_validate(db_user)
+
+
+@router.delete("/users/{user_id}", tags=["Users"])
+async def delete_user(
+    user_id: int,
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
 ):
-    return session.exec(select(Annotation)).all()
+    if api_user.permissions != "admin" and api_user.id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Non-admin user cannot delete users other than themselves",
+        )
 
+    db_user = session.get(User, user_id)
+    if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
 
-@router.post("/annotations", response_model=AnnotationPublic, tags=["Annotations"])
-async def create_annotation(
-    annotation: AnnotationCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
+    try:
+        session.delete(db_user)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
 
 
 @router.get(
-    "/annotations/{annotation_id}",
-    response_model=AnnotationPublic,
-    tags=["Annotations"],
+    "/users/{user_id}/annotations",
+    response_model=list[AnnotationPublic],
+    tags=["Users"],
 )
-async def read_annotation(
-    annotation_id: int,
+async def read_user_annotations(
+    user_id: int,
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
-):
-    annotation = session.get(Annotation, annotation_id)
-    if not annotation:
+) -> list[AnnotationPublic]:
+    if session.get(User, user_id) is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Annotation not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
-    return annotation
+    annotations = [
+        AnnotationPublic.model_validate(annotation)
+        for annotation in session.exec(
+            select(Annotation).where(Annotation.creator_id == user_id)
+        )
+    ]
+    return annotations
 
 
-@router.patch(
-    "/annotations/{annotation_id}",
-    response_model=AnnotationPublic,
-    tags=["Annotations"],
+@router.get("/users/{user_id}/issues", response_model=list[IssuePublic], tags=["Users"])
+async def read_user_issues(
+    user_id: int,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> list[IssuePublic]:
+    if session.get(User, user_id) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    issues = [
+        IssuePublic.model_validate(issue)
+        for issue in session.exec(select(Issue).where(Issue.creator_id == user_id))
+    ]
+    return issues
+
+
+@router.get(
+    "/users/{user_id}/problems", response_model=list[ProblemPublic], tags=["Users"]
 )
-async def update_annotation(
-    annotation_id: int,
-    annotation: AnnotationCreate,
+async def read_user_problems(
+    user_id: int,
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
-):
+) -> list[ProblemPublic]:
     pass
 
 
-@router.put(
-    "/annotations/{annotation_id}",
-    response_model=AnnotationPublic,
-    tags=["Annotations"],
-)
-async def overwrite_annotation(
-    annotation_id: int,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
-
-
-@router.delete("/annotations/{annotation_id}", tags=["Annotations"])
-async def delete_annotation(
-    annotation_id: int,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
-
-
-# Dataset routes
 @router.get("/datasets", response_model=list[DatasetPublic], tags=["Datasets"])
 async def read_datasets(
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
-):
-    return session.exec(select(Dataset)).all()
+) -> list[DatasetPublic]:
+    return [
+        DatasetPublic.model_validate(dataset)
+        for dataset in session.exec(select(Dataset))
+    ]
 
 
 @router.post("/datasets", response_model=DatasetPublic, tags=["Datasets"])
@@ -113,10 +242,16 @@ async def create_dataset(
     api_user: User = Depends(authenticate_user),
 ) -> DatasetPublic:
     db_dataset = dataset.to_db_model(api_user.id)
-    session.add(db_dataset)
-    session.commit()
+
+    try:
+        session.add(db_dataset)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+
     session.refresh(db_dataset)
-    return DatasetPublic(**db_dataset.__dict__)
+    return DatasetPublic.model_validate(db_dataset)
 
 
 @router.get("/datasets/{dataset_id}", response_model=DatasetPublic, tags=["Datasets"])
@@ -130,7 +265,7 @@ async def read_dataset(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Dataset not found"
         )
-    return DatasetPublic(**dataset.__dict__)
+    return DatasetPublic.model_validate(dataset)
 
 
 @router.patch("/datasets/{dataset_id}", response_model=DatasetPublic, tags=["Datasets"])
@@ -139,7 +274,7 @@ async def update_dataset(
     dataset: DatasetCreate,
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
-):
+) -> DatasetPublic:
     pass
 
 
@@ -149,7 +284,7 @@ async def overwrite_dataset(
     dataset: DatasetCreate,
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
-):
+) -> DatasetPublic:
     pass
 
 
@@ -162,205 +297,6 @@ async def delete_dataset(
     pass
 
 
-# Issue routes
-@router.get("/issues", response_model=list[IssuePublic], tags=["Issues"])
-async def read_issues(
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    return session.exec(select(Issue)).all()
-
-
-@router.post("/issues", response_model=IssuePublic, tags=["Issues"])
-async def create_issue(
-    issue: IssueCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
-
-
-@router.get("/issues/{issue_id}", response_model=IssuePublic, tags=["Issues"])
-async def read_issue(
-    issue_id: int,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    issue = session.get(Issue, issue_id)
-    if not issue:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Issue not found"
-        )
-    return issue
-
-
-@router.patch("/issues/{issue_id}", response_model=IssuePublic, tags=["Issues"])
-async def update_issue(
-    issue_id: int,
-    issue: IssueCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
-
-
-@router.put("/issues/{issue_id}", response_model=IssuePublic, tags=["Issues"])
-async def overwrite_issue(
-    issue_id: int,
-    issue: IssueCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
-
-
-@router.delete("/issues/{issue_id}", tags=["Issues"])
-async def delete_issue(
-    issue_id: int,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
-
-
-# Problem routes
-@router.get("/problems", response_model=list[ProblemPublic], tags=["Problems"])
-async def read_problems(
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    return session.exec(select(Problem)).all()
-
-
-@router.post("/problems", response_model=ProblemPublic, tags=["Problems"])
-async def create_problem(
-    problem: ProblemCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
-
-
-@router.get("/problems/{problem_id}", response_model=ProblemPublic, tags=["Problems"])
-async def read_problem(
-    problem_id: int,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    problem = session.get(Problem, problem_id)
-    if not problem:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Problem not found"
-        )
-    return problem
-
-
-@router.patch("/problems/{problem_id}", response_model=ProblemPublic, tags=["Problems"])
-async def update_problem(
-    problem_id: int,
-    problem: ProblemCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
-
-
-@router.put("/problems/{problem_id}", response_model=ProblemPublic, tags=["Problems"])
-async def overwrite_problem(
-    problem_id: int,
-    problem: ProblemCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
-
-
-@router.delete("/problems/{problem_id}", tags=["Problems"])
-async def delete_problem(
-    problem_id: int,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
-
-
-# User routes
-@router.get("/users", response_model=list[UserPublic], tags=["Users"])
-async def read_users(
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    return session.exec(select(User)).all()
-
-
-@router.post("/users", response_model=UserPublic, tags=["Users"])
-async def create_user(
-    user: UserCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-) -> UserPublic:
-    if api_user.permissions != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Non-admin user cannot add new user",
-        )
-
-    db_user = User(
-        **user.model_dump(),
-        created_at=datetime.now(),
-        last_modified=datetime.now(),
-    )
-
-    session.add(db_user)
-    session.commit()
-    session.refresh(db_user)
-    return UserPublic(**db_user.__dict__)
-
-
-@router.get("/users/{user_id}", response_model=UserPublic, tags=["Users"])
-async def read_user(
-    user_id: int,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    user = session.get(User, user_id)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
-    return user
-
-
-@router.patch("/users/{user_id}", response_model=UserPublic, tags=["Users"])
-async def update_user(
-    user_id: int,
-    user: UserCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
-
-
-@router.put("/users/{user_id}", response_model=UserPublic, tags=["Users"])
-async def overwrite_user(
-    user_id: int,
-    user: UserCreate,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
-
-
-@router.delete("/users/{user_id}", tags=["Users"])
-async def delete_user(
-    user_id: int,
-    session: Session = Depends(get_session),
-    api_user: User = Depends(authenticate_user),
-):
-    pass
-
-
-# Relationship routes
 @router.get(
     "/datasets/{dataset_id}/problems",
     response_model=list[ProblemPublic],
@@ -370,13 +306,15 @@ async def read_dataset_problems(
     dataset_id: int,
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
-):
+) -> list[ProblemPublic]:
     if session.get(Dataset, dataset_id) is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Dataset not found"
         )
     query = select(Problem).where(Problem.dataset_id == dataset_id)
-    problems = session.exec(query).all()
+    problems = [
+        ProblemPublic.model_validate(problem) for problem in session.exec(query)
+    ]
     return problems
 
 
@@ -389,7 +327,7 @@ async def read_dataset_annotations(
     dataset_id: int,
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
-):
+) -> list[AnnotationPublic]:
     pass
 
 
@@ -398,6 +336,69 @@ async def read_dataset_annotations(
 )
 async def read_dataset_issues(
     dataset_id: int,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> list[IssuePublic]:
+    pass
+
+
+@router.get("/problems", response_model=list[ProblemPublic], tags=["Problems"])
+async def read_problems(
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> list[ProblemPublic]:
+    return [
+        ProblemPublic.model_validate(problem)
+        for problem in session.exec(select(Problem))
+    ]
+
+
+@router.post("/problems", response_model=ProblemPublic, tags=["Problems"])
+async def create_problem(
+    problem: ProblemCreate,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> ProblemPublic:
+    pass
+
+
+@router.get("/problems/{problem_id}", response_model=ProblemPublic, tags=["Problems"])
+async def read_problem(
+    problem_id: int,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> ProblemPublic:
+    problem = session.get(Problem, problem_id)
+    if problem is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Problem not found"
+        )
+    return ProblemPublic.model_validate(problem)
+
+
+@router.patch("/problems/{problem_id}", response_model=ProblemPublic, tags=["Problems"])
+async def update_problem(
+    problem_id: int,
+    problem: ProblemCreate,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> ProblemPublic:
+    pass
+
+
+@router.put("/problems/{problem_id}", response_model=ProblemPublic, tags=["Problems"])
+async def overwrite_problem(
+    problem_id: int,
+    problem: ProblemCreate,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> ProblemPublic:
+    pass
+
+
+@router.delete("/problems/{problem_id}", tags=["Problems"])
+async def delete_problem(
+    problem_id: int,
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
 ):
@@ -413,13 +414,16 @@ async def read_problem_annotations(
     problem_id: int,
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
-):
-    if not session.get(Problem, problem_id):
+) -> list[AnnotationPublic]:
+    if session.get(Problem, problem_id) is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Problem not found"
         )
     query = select(Annotation).where(Annotation.problem_id == problem_id)
-    annotations = session.exec(query).all()
+    annotations = [
+        AnnotationPublic.model_validate(annotation)
+        for annotation in session.exec(query)
+    ]
     return annotations
 
 
@@ -430,45 +434,145 @@ async def read_problem_issues(
     problem_id: int,
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
-):
-    if not session.get(Problem, problem_id):
+) -> list[IssuePublic]:
+    if session.get(Problem, problem_id) is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Problem not found"
         )
     query = select(Issue).where(Issue.problem_id == problem_id)
-    annotations = session.exec(query).all()
+    annotations = [IssuePublic.model_validate(issue) for issue in session.exec(query)]
     return annotations
+
+
+@router.get("/annotations", response_model=list[AnnotationPublic], tags=["Annotations"])
+async def read_annotations(
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> list[AnnotationPublic]:
+    return [
+        AnnotationPublic.model_validate(annotation)
+        for annotation in session.exec(select(Annotation))
+    ]
+
+
+@router.post("/annotations", response_model=AnnotationPublic, tags=["Annotations"])
+async def create_annotation(
+    annotation: AnnotationCreate,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> AnnotationPublic:
+    pass
 
 
 @router.get(
-    "/users/{user_id}/annotations",
-    response_model=list[AnnotationPublic],
-    tags=["Users"],
+    "/annotations/{annotation_id}",
+    response_model=AnnotationPublic,
+    tags=["Annotations"],
 )
-async def read_user_annotations(
-    user_id: int,
+async def read_annotation(
+    annotation_id: int,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> AnnotationPublic:
+    annotation = session.get(Annotation, annotation_id)
+    if annotation is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Annotation not found"
+        )
+    return AnnotationPublic.model_validate(annotation)
+
+
+@router.patch(
+    "/annotations/{annotation_id}",
+    response_model=AnnotationPublic,
+    tags=["Annotations"],
+)
+async def update_annotation(
+    annotation_id: int,
+    annotation: AnnotationCreate,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> AnnotationPublic:
+    pass
+
+
+@router.put(
+    "/annotations/{annotation_id}",
+    response_model=AnnotationPublic,
+    tags=["Annotations"],
+)
+async def overwrite_annotation(
+    annotation_id: int,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> AnnotationPublic:
+    pass
+
+
+@router.delete("/annotations/{annotation_id}", tags=["Annotations"])
+async def delete_annotation(
+    annotation_id: int,
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
 ):
-    if not session.get(User, user_id):
+    pass
+
+
+@router.get("/issues", response_model=list[IssuePublic], tags=["Issues"])
+async def read_issues(
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> list[IssuePublic]:
+    return [IssuePublic.model_validate(issue) for issue in session.exec(select(Issue))]
+
+
+@router.post("/issues", response_model=IssuePublic, tags=["Issues"])
+async def create_issue(
+    issue: IssueCreate,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> IssuePublic:
+    pass
+
+
+@router.get("/issues/{issue_id}", response_model=IssuePublic, tags=["Issues"])
+async def read_issue(
+    issue_id: int,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> IssuePublic:
+    issue = session.get(Issue, issue_id)
+    if issue is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Issue not found"
         )
-    annotations = session.exec(
-        select(Annotation).where(Annotation.creator_id == user_id)
-    ).all()
-    return annotations
+    return IssuePublic.model_validate(issue)
 
 
-@router.get("/users/{user_id}/issues", response_model=list[IssuePublic], tags=["Users"])
-async def read_user_issues(
-    user_id: int,
+@router.patch("/issues/{issue_id}", response_model=IssuePublic, tags=["Issues"])
+async def update_issue(
+    issue_id: int,
+    issue: IssueCreate,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> IssuePublic:
+    pass
+
+
+@router.put("/issues/{issue_id}", response_model=IssuePublic, tags=["Issues"])
+async def overwrite_issue(
+    issue_id: int,
+    issue: IssueCreate,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> IssuePublic:
+    pass
+
+
+@router.delete("/issues/{issue_id}", tags=["Issues"])
+async def delete_issue(
+    issue_id: int,
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
 ):
-    if not session.get(User, user_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
-    issues = session.exec(select(Issue).where(Issue.creator_id == user_id)).all()
-    return issues
+    pass
