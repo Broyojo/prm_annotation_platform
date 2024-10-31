@@ -5,20 +5,11 @@ from fastapi import Depends, FastAPI, HTTPException, Query, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.security import APIKeyHeader
-from models.annotation import Annotation, AnnotationCreate, AnnotationPublic
-from models.dataset import Dataset, DatasetCreate, DatasetPublic
-from models.issue import Issue, IssueCreate, IssuePublic
-from models.problem import Problem, ProblemCreate, ProblemPublic
-from models.user import User, UserCreate, UserPublic
-
-# Then import routes
-from routes import users
-
-# from routes import users
+from models import *
+from routes import *
 from sqlmodel import Session, SQLModel, create_engine, distinct, func, select
 
-URL = "sqlite:///test_database.db"
-engine = create_engine(URL, echo=True)
+engine = create_engine("sqlite:///test_database.db", echo=True)
 SQLModel.metadata.create_all(engine)
 
 logger = logging.getLogger("uvicorn.error")
@@ -50,6 +41,12 @@ app.add_middleware(
 async def index():
     return RedirectResponse(url="/docs")
 
+
+app.include_router(users_router)
+app.include_router(annotations_router)
+app.include_router(problems_router)
+app.include_router(datasets_routers)
+app.include_router(issues_router)
 
 # TODO: add this later
 # async def authenticate_user(api_key: str = Security(header_scheme)) -> User:
