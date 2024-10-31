@@ -123,7 +123,7 @@ async def update_user(
         )
 
     try:
-        db_user.sqlmodel_update(user_update)
+        db_user.sqlmodel_update(user_update.model_dump(exclude_unset=True))
         db_user.last_modified = datetime.now()
         session.commit()
     except Exception as e:
