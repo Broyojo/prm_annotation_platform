@@ -112,13 +112,7 @@ async def create_dataset(
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
 ) -> DatasetPublic:
-    print("WE REACHED HERE")
-    db_dataset = Dataset(
-        **dataset.model_dump(),
-        created_at=datetime.now(),
-        last_modified=datetime.now(),
-        creator_id=api_user.id,
-    )
+    db_dataset = dataset.to_db_model(api_user.id)
     session.add(db_dataset)
     session.commit()
     session.refresh(db_dataset)

@@ -9,7 +9,7 @@ class AnnotationBase(SQLModel):
 
 
 class Annotation(AnnotationBase, table=True):
-    id: int = Field(nullable=False, primary_key=True, unique=True)
+    id: int = Field(default=None, primary_key=True, unique=True)
     created_at: datetime
     last_modified: datetime
     problem_id: int = Field(nullable=False, foreign_key="problem.id")
@@ -37,7 +37,7 @@ class DatasetBase(SQLModel):
 
 
 class Dataset(DatasetBase, table=True):
-    id: int = Field(nullable=False, primary_key=True, unique=True)
+    id: int = Field(default=None, primary_key=True, unique=True)
     created_at: datetime
     last_modified: datetime
     creator_id: int = Field(nullable=False, foreign_key="user.id")
@@ -63,6 +63,22 @@ class DatasetCreate(DatasetBase):
 
     problems: list["ProblemCreate"] = []
 
+    def to_db_model(self, creator_id: int) -> Dataset:
+        now = datetime.now()
+        return Dataset(
+            name=self.name,
+            description=self.description,
+            domain=self.domain,
+            extra_metadata=self.extra_metadata,
+            created_at=now,
+            last_modified=now,
+            creator_id=creator_id,
+            problems=[
+                Problem(**problem.model_dump(), created_at=now, last_modified=now)
+                for problem in self.problems
+            ],
+        )
+
 
 class IssueBase(SQLModel):
     text: str
@@ -70,7 +86,7 @@ class IssueBase(SQLModel):
 
 
 class Issue(IssueBase, table=True):
-    id: int = Field(nullable=False, primary_key=True, unique=True)
+    id: int = Field(default=None, primary_key=True, unique=True)
     created_at: datetime
     last_modified: datetime
     creator: "User" = Relationship(back_populates="issues")
@@ -104,7 +120,7 @@ class ProblemBase(SQLModel):
 
 
 class Problem(ProblemBase, table=True):
-    id: int = Field(nullable=False, primary_key=True, unique=True)
+    id: int = Field(default=None, primary_key=True, unique=True)
     created_at: datetime
     last_modified: datetime
     dataset_id: int = Field(nullable=False, foreign_key="dataset.id")
@@ -133,7 +149,7 @@ class UserBase(SQLModel):
 
 
 class User(UserBase, table=True):
-    id: int = Field(nullable=False, primary_key=True, unique=True)
+    id: int = Field(default=None, primary_key=True, unique=True)
     created_at: datetime
     last_modified: datetime
     annotations: list[Annotation] = Relationship(back_populates="creator")

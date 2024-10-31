@@ -116,12 +116,15 @@ def test_create_dataset(
     client: TestClient, test_user: User, fake_dataset, fake_problem
 ):
     problems = [fake_problem() for _ in range(random.randint(0, 100))]
-    dataset: DatasetCreate = fake_dataset(problems=problems)
+
+    dataset = fake_dataset(problems=problems)
+
+    dataset_dict = dataset.model_dump()
 
     response = client.post(
         "/api/datasets",
         headers={"x-key": test_user.api_key},
-        json=dataset.model_dump(),
+        json=dataset_dict,
     )
 
     data = response.json()
