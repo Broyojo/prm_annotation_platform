@@ -4,24 +4,25 @@ from sqlmodel import JSON, Column, Field, Relationship, SQLModel
 
 
 class AnnotationBase(SQLModel):
-    step_labels: str = Field(sa_column=Column(JSON))
-    complete: bool = False  # if all steps are labeled
-
-    problem_id: int | None = Field(default=None, foreign_key="problem.id")
-    creator_id: int | None = Field(default=None, foreign_key="user.id")
+    step_labels: dict[int, str] = Field(sa_column=Column(JSON))
+    complete: bool = False
 
 
 class Annotation(AnnotationBase, table=True):
-    id: int | None = Field(default=None, primary_key=True, unique=True)
+    id: int = Field(nullable=False, primary_key=True, unique=True)
     created_at: datetime
     last_modified: datetime
-
+    problem_id: int = Field(nullable=False, foreign_key="problem.id")
     problem: "Problem" = Relationship(back_populates="annotations")
+    creator_id: int = Field(nullable=False, foreign_key="user.id")
     creator: "User" = Relationship(back_populates="annotations")
 
 
 class AnnotationPublic(AnnotationBase):
     id: int
+    created_at: datetime
+    last_modified: datetime
+    creator: "User"
 
 
 class AnnotationCreate(AnnotationBase):
@@ -32,16 +33,14 @@ class DatasetBase(SQLModel):
     name: str
     description: str
     domain: str  # math, coding, agentic, etc.
-    extra_metadata: str | None = Field(default=None, sa_column=Column(JSON))
-
-    creator_id: int | None = Field(default=None, foreign_key="user.id")
+    extra_metadata: dict | None = Field(default=None, sa_column=Column(JSON))
 
 
 class Dataset(DatasetBase, table=True):
-    id: int | None = Field(default=None, primary_key=True, unique=True)
+    id: int = Field(nullable=False, primary_key=True, unique=True)
     created_at: datetime
     last_modified: datetime
-
+    creator_id: int = Field(nullable=False, foreign_key="user.id")
     creator: "User" = Relationship(back_populates="datasets")
     problems: list["Problem"] = Relationship(
         back_populates="dataset", cascade_delete=True
@@ -62,24 +61,22 @@ class DatasetCreate(DatasetBase):
     Along with regular fields, users can also upload problems at the same time.
     """
 
-    problems: list["ProblemCreate"] | None
+    problems: list["ProblemCreate"] = []
 
 
 class IssueBase(SQLModel):
     text: str
     resolved: bool = False
 
-    creator_id: int | None = Field(default=None, foreign_key="user.id")
-    problem_id: int | None = Field(default=None, foreign_key="problem.id")
-
 
 class Issue(IssueBase, table=True):
-    id: int | None = Field(default=None, primary_key=True, unique=True)
+    id: int = Field(nullable=False, primary_key=True, unique=True)
     created_at: datetime
     last_modified: datetime
-
     creator: "User" = Relationship(back_populates="issues")
+    creator_id: int = Field(nullable=False, foreign_key="user.id")
     problem: "Problem" = Relationship(back_populates="issues")
+    problem_id: int = Field(nullable=False, foreign_key="problem.id")
 
 
 class IssuePublic(IssueBase):
@@ -94,28 +91,26 @@ class ProblemBase(SQLModel):
     question: str
     answer: str
     llm_answer: str = Field(unique=True)  # LLM answers should be unique
-    steps: str = Field(sa_column=Column(JSON))
+    steps: dict[int, str] = Field(sa_column=Column(JSON))
     num_steps: int
     is_correct: bool | None = None
     solve_ratio: float | None = None
     llm_name: str | None = None
     prompt_format: str | None = None
-    final_answer: str | None = Field(default=None, sa_column=Column(JSON))
-    extra_metadata: str | None = Field(default=None, sa_column=Column(JSON))
-
-    dataset_id: int | None = Field(default=None, foreign_key="dataset.id")
+    final_answer: dict | None = Field(default=None, sa_column=Column(JSON))
+    extra_metadata: dict | None = Field(default=None, sa_column=Column(JSON))
 
 
 class Problem(ProblemBase, table=True):
-    id: int | None = Field(default=None, primary_key=True, unique=True)
+    id: int = Field(nullable=False, primary_key=True, unique=True)
     created_at: datetime
     last_modified: datetime
-
+    dataset_id: int = Field(nullable=False, foreign_key="dataset.id")
+    dataset: Dataset = Relationship(back_populates="problems")
     annotations: list[Annotation] = Relationship(
         back_populates="problem", cascade_delete=True
     )
     issues: list[Issue] = Relationship(back_populates="problem", cascade_delete=True)
-    dataset: Dataset = Relationship(back_populates="problems")
 
 
 class ProblemPublic(ProblemBase):
@@ -137,8 +132,9 @@ class UserBase(SQLModel):
 
 
 class User(UserBase, table=True):
-    id: int | None = Field(default=None, primary_key=True, unique=True)
-
+    id: int = Field(nullable=False, primary_key=True, unique=True)
+    created_at: datetime
+    last_modified: datetime
     annotations: list[Annotation] = Relationship(back_populates="creator")
     datasets: list[Dataset] = Relationship(back_populates="creator")
     issues: list[Issue] = Relationship(back_populates="creator")
@@ -150,6 +146,8 @@ class UserCreate(UserBase):
 
 class UserPublic(UserBase):
     id: int
+    created_at: datetime
+    last_modified: datetime
     annotations: list[AnnotationPublic]
     issues: list[IssuePublic]
     datasets: list[DatasetPublic]

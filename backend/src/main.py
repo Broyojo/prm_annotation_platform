@@ -1,32 +1,26 @@
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, HTTPException, Query, Security
+import routes
+from database import create_db_and_tables, get_session
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.security import APIKeyHeader
-from models import *
-from routes import *
-from sqlmodel import Session, SQLModel, create_engine, distinct, func, select
-
-engine = create_engine("sqlite:///test_database.db", echo=True)
-SQLModel.metadata.create_all(engine)
+from sqlmodel import SQLModel, create_engine
 
 logger = logging.getLogger("uvicorn.error")
-
-header_scheme = APIKeyHeader(name="x-key")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global engine
-    logger.info("Loading database")
-    engine = create_engine("sqlite:///test_database.db")
-    SQLModel.metadata.create_all(engine)
+    logger.info("Initializing database")
+    create_db_and_tables()
     yield
+    logger.info("Shutting Down")
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, root_path="/api")
 
 app.add_middleware(
     CORSMiddleware,
@@ -42,11 +36,7 @@ async def index():
     return RedirectResponse(url="/docs")
 
 
-app.include_router(users_router)
-app.include_router(annotations_router)
-app.include_router(problems_router)
-app.include_router(datasets_routers)
-app.include_router(issues_router)
+app.include_router(routes.router)
 
 # TODO: add this later
 # async def authenticate_user(api_key: str = Security(header_scheme)) -> User:
