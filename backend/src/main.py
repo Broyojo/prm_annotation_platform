@@ -2,12 +2,10 @@ import logging
 from contextlib import asynccontextmanager
 
 import routes
-from database import create_db_and_tables, get_session
+from database import create_db_and_tables
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
-from fastapi.security import APIKeyHeader
-from sqlmodel import SQLModel, create_engine
 
 logger = logging.getLogger("uvicorn.error")
 

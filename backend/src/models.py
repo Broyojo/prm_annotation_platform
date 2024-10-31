@@ -22,7 +22,7 @@ class AnnotationPublic(AnnotationBase):
     id: int
     created_at: datetime
     last_modified: datetime
-    creator: "User"
+    creator_id: int
 
 
 class AnnotationCreate(AnnotationBase):
@@ -51,7 +51,7 @@ class DatasetPublic(DatasetBase):
     id: int
     created_at: datetime
     last_modified: datetime
-    creator: "User"
+    creator_id: int
 
 
 class DatasetCreate(DatasetBase):
@@ -81,6 +81,8 @@ class Issue(IssueBase, table=True):
 
 class IssuePublic(IssueBase):
     id: int
+    creator_id: int
+    problem_id: int
 
 
 class IssueCreate(IssueBase):
@@ -117,8 +119,7 @@ class ProblemPublic(ProblemBase):
     id: int
     created_at: datetime
     last_modified: datetime
-    annotations: list[AnnotationPublic]
-    issues: list[IssuePublic]
+    dataset_id: int
 
 
 class ProblemCreate(ProblemBase):
@@ -148,6 +149,3 @@ class UserPublic(UserBase):
     id: int
     created_at: datetime
     last_modified: datetime
-    annotations: list[AnnotationPublic]
-    issues: list[IssuePublic]
-    datasets: list[DatasetPublic]
