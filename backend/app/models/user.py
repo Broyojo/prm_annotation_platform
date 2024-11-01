@@ -1,5 +1,5 @@
 import secrets
-from typing import TYPE_CHECKING, ForwardRef
+from typing import TYPE_CHECKING
 
 from app.models.base import ModelBase
 from pydantic import field_validator

@@ -1,9 +1,8 @@
 from typing import Optional
 
+from app.schemas.base import CreateBase, PublicBase, UpdateBase
 from pydantic import field_validator
 from sqlmodel import SQLModel
-
-from .base import PublicBase
 
 
 class UserBase(SQLModel):
@@ -17,7 +16,7 @@ class UserBase(SQLModel):
         return v
 
 
-class UserCreate(UserBase):
+class UserCreate(UserBase, CreateBase):
     pass
 
 
@@ -25,7 +24,7 @@ class UserPublic(UserBase, PublicBase):
     pass
 
 
-class UserUpdate(SQLModel):
+class UserUpdate(UpdateBase):
     name: Optional[str] = None
     permissions: Optional[str] = None
 

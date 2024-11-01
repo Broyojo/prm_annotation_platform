@@ -1,9 +1,8 @@
 from typing import Optional
 
+from app.schemas.base import CreateBase, PublicBase, UpdateBase
+from app.schemas.problem import ProblemCreate
 from sqlmodel import SQLModel
-
-from .base import PublicBase
-from .problem import ProblemCreate
 
 
 class DatasetBase(SQLModel):
@@ -13,7 +12,7 @@ class DatasetBase(SQLModel):
     extra_metadata: Optional[dict] = None
 
 
-class DatasetCreate(DatasetBase):
+class DatasetCreate(DatasetBase, CreateBase):
     problems: list[ProblemCreate]
 
 
@@ -21,7 +20,7 @@ class DatasetPublic(DatasetBase, PublicBase):
     pass
 
 
-class DatasetUpdate(SQLModel):
+class DatasetUpdate(UpdateBase):
     name: Optional[str] = None
     description: Optional[str] = None
     domain: Optional[str] = None

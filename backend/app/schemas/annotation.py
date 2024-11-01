@@ -1,8 +1,7 @@
 from typing import Optional
 
+from app.schemas.base import CreateBase, PublicBase, UpdateBase
 from sqlmodel import SQLModel
-
-from .base import PublicBase
 
 
 class AnnotationBase(SQLModel):
@@ -10,7 +9,7 @@ class AnnotationBase(SQLModel):
     complete: bool = False
 
 
-class AnnotationCreate(AnnotationBase):
+class AnnotationCreate(AnnotationBase, CreateBase):
     problem_id: int
 
 
@@ -18,6 +17,6 @@ class AnnotationPublic(AnnotationBase, PublicBase):
     problem_id: int
 
 
-class AnnotationUpdate(SQLModel):
+class AnnotationUpdate(UpdateBase):
     step_labels: Optional[dict[int, str]] = None
     complete: Optional[bool] = None

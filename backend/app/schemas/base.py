@@ -4,6 +4,10 @@ from typing import Optional
 from sqlmodel import SQLModel
 
 
+class CreateBase(SQLModel):
+    pass
+
+
 class PublicBase(SQLModel):
     id: int
 
@@ -15,3 +19,7 @@ class PublicBase(SQLModel):
     valid_from: datetime
     valid_to: Optional[datetime]
     modifier_id: int
+
+
+class UpdateBase(SQLModel):
+    pass

@@ -1,5 +1,5 @@
 from app.api.dependencies import get_session
-from app.models.user import User
+from app.crud.user import CRUDUser
 from app.schemas.annotation import AnnotationPublic
 from app.schemas.dataset import DatasetPublic
 from app.schemas.issue import IssuePublic
@@ -15,17 +15,20 @@ router = APIRouter()
 def create_user(
     *, user_create: UserCreate, session: Session = Depends(get_session)
 ) -> UserPublic:
-    pass
+    user = CRUDUser(session).create(user_create)
+    return user
 
 
 @router.get("/", response_model=list[UserPublic])
 def read_users(*, session: Session = Depends(get_session)) -> list[UserPublic]:
-    pass
+    users = CRUDUser(session).read_all()
+    return users
 
 
 @router.get("/{user_id}", response_model=UserPublic)
 def read_user(*, user_id: int, session: Session = Depends(get_session)) -> UserPublic:
-    pass
+    user = CRUDUser(session).read(user_id)
+    return user
 
 
 @router.get("/{user_id}", response_model=list[UserPublic])
@@ -67,9 +70,10 @@ def read_user_issues(
 def update_user(
     *, user_id: int, user_update: UserUpdate, session: Session = Depends(get_session)
 ) -> UserPublic:
-    pass
+    user = CRUDUser(session).update(user_id, user_update)
+    return user
 
 
 @router.delete("/{user_id}")
 def delete_user(*, user_id: int, session: Session = Depends(get_session)):
-    pass
+    CRUDUser(session).delete(user_id)

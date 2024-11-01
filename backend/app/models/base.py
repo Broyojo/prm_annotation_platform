@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, ForwardRef, Optional
+from typing import Optional
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, SQLModel
 
 
 class ModelBase(SQLModel):

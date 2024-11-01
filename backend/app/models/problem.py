@@ -3,12 +3,11 @@ from typing import TYPE_CHECKING, Optional
 from sqlmodel import JSON, Field, Relationship
 
 if TYPE_CHECKING:
+    from app.models.annotation import Annotation
+    from app.models.base import ModelBase
+    from app.models.dataset import Dataset
+    from app.models.issue import Issue
     from app.models.user import User
-
-    from .annotation import Annotation
-    from .base import ModelBase
-    from .dataset import Dataset
-    from .issue import Issue
 
 
 class Problem(ModelBase, table=True):
