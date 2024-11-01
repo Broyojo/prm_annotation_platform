@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME = "PRM Annotation Platform"
+    PROJECT_NAME: str = "PRM Annotation Platform"
 
     # TODO:
     # configure to load from .env or CLI

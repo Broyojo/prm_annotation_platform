@@ -3,7 +3,7 @@ from typing import Optional
 from sqlmodel import SQLModel
 
 from .base import PublicBase
-from .problem import ProblemPublic
+from .problem import ProblemCreate
 
 
 class DatasetBase(SQLModel):
@@ -14,7 +14,7 @@ class DatasetBase(SQLModel):
 
 
 class DatasetCreate(DatasetBase):
-    problems: list[ProblemPublic]
+    problems: list[ProblemCreate]
 
 
 class DatasetPublic(DatasetBase, PublicBase):

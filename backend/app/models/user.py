@@ -1,15 +1,15 @@
 import secrets
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ForwardRef
 
+from app.models.base import ModelBase
 from pydantic import field_validator
 from sqlmodel import Field, Relationship
 
 if TYPE_CHECKING:
-    from .annotation import Annotation
-    from .base import ModelBase
-    from .dataset import Dataset
-    from .issue import Issue
-    from .problem import Problem
+    from app.models.annotation import Annotation
+    from app.models.dataset import Dataset
+    from app.models.issue import Issue
+    from app.models.problem import Problem
 
 
 class User(ModelBase, table=True, creator_relationship="users"):
@@ -18,10 +18,10 @@ class User(ModelBase, table=True, creator_relationship="users"):
     permissions: str = "standard"
 
     users: list["User"] = Relationship(back_populates="creator")
-    annotations: list[Annotation] = Relationship(back_populates="creator")
-    datasets: list[Dataset] = Relationship(back_populates="creator")
-    issues: list[Issue] = Relationship(back_populates="creator")
-    problems: list[Problem] = Relationship(back_populates="creator")
+    annotations: list["Annotation"] = Relationship(back_populates="creator")
+    datasets: list["Dataset"] = Relationship(back_populates="creator")
+    issues: list["Issue"] = Relationship(back_populates="creator")
+    problems: list["Problem"] = Relationship(back_populates="creator")
 
     @field_validator("permissions")
     def validate_permissions(cls, v):

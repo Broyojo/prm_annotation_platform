@@ -1,18 +1,21 @@
 from typing import TYPE_CHECKING, Optional
 
+from app.models.base import ModelBase
 from sqlmodel import JSON, Field, Relationship
 
 if TYPE_CHECKING:
-    from .base import ModelBase
-    from .problem import Problem
+    from app.models.problem import Problem
+    from app.models.user import User
 
 
-class Dataset(ModelBase, table=True, creator_relationship="datasets"):
+class Dataset(ModelBase, table=True):
     name: str
     description: str
     domain: str  # math, coding, agentic, etc.
     extra_metadata: Optional[dict] = Field(default=None, sa_type=JSON)
 
-    problems: list[Problem] = Relationship(
+    problems: list["Problem"] = Relationship(
         back_populates="dataset", cascade_delete=True
     )
+
+    creator: "User" = Relationship(back_populates="datasets")

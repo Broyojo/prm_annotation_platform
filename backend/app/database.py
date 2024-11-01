@@ -18,3 +18,6 @@ def create_db_and_tables():
 def get_session():
     with Session(engine) as session:
         yield session
+
+
+# TODO: improve this by looking at claude's code

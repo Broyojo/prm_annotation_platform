@@ -1,16 +1,17 @@
-from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlmodel import JSON, Field, Relationship, SQLModel
+from sqlmodel import JSON, Field, Relationship
 
 if TYPE_CHECKING:
+    from app.models.user import User
+
     from .annotation import Annotation
     from .base import ModelBase
     from .dataset import Dataset
     from .issue import Issue
 
 
-class Problem(ModelBase, table=True, creator_relationship="problems"):
+class Problem(ModelBase, table=True):
     question: str
     answer: str
     llm_answer: str = Field(unique=True)
@@ -23,7 +24,7 @@ class Problem(ModelBase, table=True, creator_relationship="problems"):
     final_answer: Optional[dict] = Field(default=None, sa_type=JSON)
     extra_metadata: Optional[dict] = Field(default=None, sa_type=JSON)
 
-    dataset_id: int = Field(default=None, foreign_key="dataset.id")
+    dataset_id: int = Field(default=None, foreign_key="dataset.id", index=True)
     dataset: Dataset = Relationship(back_populates="problems")
 
     annotations: list[Annotation] = Relationship(
@@ -31,3 +32,5 @@ class Problem(ModelBase, table=True, creator_relationship="problems"):
     )
 
     issues: list[Issue] = Relationship(back_populates="problem", cascade_delete=True)
+
+    creator: "User" = Relationship(back_populates="problems")
