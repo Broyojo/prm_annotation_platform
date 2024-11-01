@@ -62,7 +62,7 @@ async def create_user(
             detail="Non-admin user cannot create user",
         )
 
-    db_user = user_create.to_db_model()
+    db_user = user_create.to_db_model(modifier_id=api_user.id)
 
     try:
         session.add(db_user)
@@ -116,6 +116,12 @@ async def update_user(
             detail="Non-admin user cannot update user other than themselves",
         )
 
+    if user_update.permissions != api_user.permissions:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Non-admin user cannot change their permissions",
+        )
+
     db_user = session.get(User, user_id)
     if db_user is None:
         raise HTTPException(
@@ -158,6 +164,28 @@ async def delete_user(
     except Exception as e:
         session.rollback()
         raise e
+
+
+@router.get(
+    "/users/{user_id}/datasets", response_model=list[DatasetPublic], tags=["Users"]
+)
+async def read_user_datasets(
+    user_id: int,
+    session: Session = Depends(get_session),
+    api_user: User = Depends(authenticate_user),
+) -> list[DatasetPublic]:
+    db_user = session.get(User, user_id)
+    if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    datasets = [
+        DatasetPublic.model_validate(dataset)
+        for dataset in session.exec(
+            select(Dataset).where(Dataset.creator_id == user_id)
+        )
+    ]
+    return datasets
 
 
 @router.get(
@@ -260,12 +288,12 @@ async def read_dataset(
     session: Session = Depends(get_session),
     api_user: User = Depends(authenticate_user),
 ) -> DatasetPublic:
-    dataset = session.get(Dataset, dataset_id)
-    if dataset is None:
+    db_dataset = session.get(Dataset, dataset_id)
+    if db_dataset is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Dataset not found"
         )
-    return DatasetPublic.model_validate(dataset)
+    return DatasetPublic.model_validate(db_dataset)
 
 
 @router.patch("/datasets/{dataset_id}", response_model=DatasetPublic, tags=["Datasets"])

@@ -111,7 +111,7 @@ def fake_problem(faker) -> Callable[..., ProblemCreate]:
             question=kwargs.get("question", faker.paragraph()),
             answer=kwargs.get("answer", faker.paragraph()),
             llm_answer=" ".join(steps),
-            steps={i: step for i, step in enumerate(steps)},
+            steps=steps,
             num_steps=len(steps),
             is_correct=kwargs.get("is_correct", faker.boolean()),
             solve_ratio=kwargs.get("solve_ratio", faker.pyfloat()),
