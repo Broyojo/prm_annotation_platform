@@ -6,7 +6,6 @@ from sqlmodel import JSON, Field, Relationship, SQLModel
 if TYPE_CHECKING:
     from .base import ModelBase
     from .problem import Problem
-    from .user import User
 
 
 class Annotation(ModelBase, table=True, creator_relationship="annotations"):

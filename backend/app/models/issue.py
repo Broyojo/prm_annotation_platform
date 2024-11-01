@@ -5,7 +5,6 @@ from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from .problem import Problem
-    from .user import User
 
 
 class Issue(SQLModel, table=True, creator_relationship="issues"):

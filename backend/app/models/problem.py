@@ -8,7 +8,6 @@ if TYPE_CHECKING:
     from .base import ModelBase
     from .dataset import Dataset
     from .issue import Issue
-    from .user import User
 
 
 class Problem(ModelBase, table=True, creator_relationship="problems"):
