@@ -1,40 +1,48 @@
-import logging
-from contextlib import asynccontextmanager
-
-import routes
-from database import create_db_and_tables
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
 
-logger = logging.getLogger("uvicorn.error")
+from .api.v1.api import api_router
+from .core.config import settings
 
+app = FastAPI(title=settings.PROJECT_NAME)
+app.include_router(api_router, prefix="/api/v1")
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    logger.info("Initializing database")
-    create_db_and_tables()
-    yield
-    logger.info("Shutting Down")
+# import logging
+# from contextlib import asynccontextmanager
 
+# import routes
+# from database import create_db_and_tables
+# from fastapi import FastAPI
+# from fastapi.middleware.cors import CORSMiddleware
+# from fastapi.responses import RedirectResponse
 
-app = FastAPI(lifespan=lifespan, root_path="/api")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# logger = logging.getLogger("uvicorn.error")
 
 
-@app.get("/", include_in_schema=False)
-async def index():
-    return RedirectResponse(url="/docs")
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     logger.info("Initializing database")
+#     create_db_and_tables()
+#     yield
+#     logger.info("Shutting Down")
 
 
-app.include_router(routes.router)
+# app = FastAPI(lifespan=lifespan, root_path="/api")
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
+
+# @app.get("/", include_in_schema=False)
+# async def index():
+#     return RedirectResponse(url="/docs")
+
+
+# app.include_router(routes.router)
 
 # TODO: add this later
 # async def authenticate_user(api_key: str = Security(header_scheme)) -> User:

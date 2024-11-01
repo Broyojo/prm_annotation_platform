@@ -11,7 +11,7 @@ class AnnotationBase(SQLModel):
 
 
 class AnnotationCreate(AnnotationBase):
-    pass
+    problem_id: int
 
 
 class AnnotationPublic(AnnotationBase, PublicBase):

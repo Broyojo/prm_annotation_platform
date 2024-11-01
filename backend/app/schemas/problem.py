@@ -20,7 +20,8 @@ class ProblemBase(SQLModel):
 
 
 class ProblemCreate(ProblemBase):
-    pass
+    # either can provide problems with a dataset, or add a problem individually to an existing dataset
+    dataset_id: Optional[int] = None
 
 
 class ProblemPublic(ProblemBase, PublicBase):
