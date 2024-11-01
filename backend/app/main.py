@@ -1,9 +1,36 @@
+import logging
+from contextlib import asynccontextmanager
+
 from app.api.v1.api import api_router
 from app.core.config import settings
+from app.database import create_db_and_tables
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title=settings.PROJECT_NAME)
+logger = logging.getLogger("uvicorn.error")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Initializing database")
+    create_db_and_tables()
+    yield
+    logger.info("Shutting Down")
+
+
+app = FastAPI(title=settings.project_name, lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 app.include_router(api_router, prefix="/api/v1")
+
 
 # import logging
 # from contextlib import asynccontextmanager

@@ -1,14 +1,13 @@
+import sys
 from functools import lru_cache
 from typing import List, Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Settings(BaseSettings):
-    PROJECT_NAME: str = "PRM Annotation Platform"
-
-    # TODO:
-    # configure to load from .env or CLI
+class Settings(BaseSettings, cli_parse_args=True):
+    project_name: str = "PRM Annotation Platform"
+    db_url: str = "sqlite:///prmbench_database.db"
 
 
 @lru_cache()

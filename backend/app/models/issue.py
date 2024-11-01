@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from app.models.base import ModelBase
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
@@ -7,7 +8,7 @@ if TYPE_CHECKING:
     from app.models.user import User
 
 
-class Issue(SQLModel, table=True):
+class Issue(ModelBase, table=True):
     text: str
     resolved: bool = False
 

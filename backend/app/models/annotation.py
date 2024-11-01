@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
 
+from app.models.base import ModelBase
 from sqlmodel import JSON, Field, Relationship
 
 if TYPE_CHECKING:
-    from app.models.base import ModelBase
     from app.models.problem import Problem
     from app.models.user import User
 
@@ -13,6 +13,6 @@ class Annotation(ModelBase, table=True):
     complete: bool = False
 
     problem_id: int = Field(default=None, foreign_key="problem.id", index=True)
-    problem: Problem = Relationship(back_populates="annotations")
+    problem: "Problem" = Relationship(back_populates="annotations")
 
-    creator: User = Relationship(back_populates="annotations")
+    creator: "User" = Relationship(back_populates="annotations")

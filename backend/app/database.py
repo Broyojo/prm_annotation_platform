@@ -1,10 +1,11 @@
 import logging
 
+from app.core.config import settings
 from sqlmodel import Session, SQLModel, create_engine
 
 logger = logging.getLogger("uvicorn.error")
 
-url = "sqlite:///prmbench_database.db"
+url = settings.db_url
 engine = create_engine(
     url,
     connect_args={"check_same_thread": False},
@@ -12,6 +13,13 @@ engine = create_engine(
 
 
 def create_db_and_tables():
+    from app.models.annotation import Annotation
+    from app.models.base import ModelBase
+    from app.models.dataset import Dataset
+    from app.models.issue import Issue
+    from app.models.problem import Problem
+    from app.models.user import User
+
     SQLModel.metadata.create_all(engine)
 
 
