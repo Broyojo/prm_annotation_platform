@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from sqlmodel import select
 
 from app.crud.base import CRUDBase
+from app.crud.problem import CRUDProblem
 from app.models.annotation import Annotation
 from app.schemas.annotation import AnnotationCreate, AnnotationRead, AnnotationUpdate
 
@@ -13,6 +14,9 @@ class CRUDAnnotation(CRUDBase):
         db_annotation = Annotation(
             **annotation_create.model_dump(), creator_id=self.api_user.id
         )
+
+        CRUDProblem(self.session, self.api_user).read(annotation_create.problem_id)
+
         try:
             self.session.add(db_annotation)
             self.session.commit()

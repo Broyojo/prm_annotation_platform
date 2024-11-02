@@ -4,7 +4,7 @@ from sqlmodel import Field, SQLModel
 
 
 class ModelBase(SQLModel):
-    id: int = Field(default=None, primary_key=True, nullable=True)
+    id: int = Field(default=None, primary_key=True, nullable=False)
 
     created_at: datetime = Field(default_factory=datetime.now, index=True)
     last_modified: datetime = Field(default_factory=datetime.now, index=True)

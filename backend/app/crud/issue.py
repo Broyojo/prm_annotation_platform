@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from sqlmodel import select
 
 from app.crud.base import CRUDBase
+from app.crud.problem import CRUDProblem
 from app.models.issue import Issue
 from app.schemas.issue import IssueCreate, IssueRead, IssueUpdate
 
@@ -11,6 +12,7 @@ from app.schemas.issue import IssueCreate, IssueRead, IssueUpdate
 class CRUDIssue(CRUDBase):
     def create(self, issue_create: IssueCreate) -> IssueRead:
         db_issue = Issue(**issue_create.model_dump(), creator_id=self.api_user.id)
+        CRUDProblem(self.session, self.api_user).read(issue_create.problem_id)
         try:
             self.session.add(db_issue)
             self.session.commit()

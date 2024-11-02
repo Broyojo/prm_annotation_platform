@@ -5,6 +5,7 @@ from sqlmodel import select
 
 from app.crud.base import CRUDBase
 from app.models.dataset import Dataset
+from app.models.problem import Problem
 from app.schemas.annotation import AnnotationRead
 from app.schemas.dataset import DatasetCreate, DatasetRead, DatasetUpdate
 from app.schemas.issue import IssueRead
@@ -13,7 +14,15 @@ from app.schemas.problem import ProblemRead
 
 class CRUDDataset(CRUDBase):
     def create(self, dataset_create: DatasetCreate) -> DatasetRead:
-        db_dataset = Dataset(**dataset_create.model_dump(), creator_id=self.api_user.id)
+        problems = [
+            Problem(**problem.model_dump(), creator_id=self.api_user.id)
+            for problem in dataset_create.problems
+        ]
+        db_dataset = Dataset(
+            **dataset_create.model_dump(exclude={"problems": True}),
+            problems=problems,
+            creator_id=self.api_user.id,
+        )
         try:
             self.session.add(db_dataset)
             self.session.commit()

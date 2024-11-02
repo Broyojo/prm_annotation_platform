@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from sqlmodel import select
 
 from app.crud.base import CRUDBase
+from app.crud.dataset import CRUDDataset
 from app.models.problem import Problem
 from app.schemas.annotation import AnnotationRead
 from app.schemas.issue import IssueRead
@@ -13,6 +14,8 @@ from app.schemas.problem import ProblemCreate, ProblemRead, ProblemUpdate
 class CRUDProblem(CRUDBase):
     def create(self, problem_create: ProblemCreate) -> ProblemRead:
         db_problem = Problem(**problem_create.model_dump(), creator_id=self.api_user.id)
+        if problem_create.dataset_id:
+            CRUDDataset(self.session, self.api_user).read(problem_create.dataset_id)
         try:
             self.session.add(db_problem)
             self.session.commit()

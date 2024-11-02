@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING, Optional
 
-from app.models.base import ModelBase
 from sqlmodel import JSON, Field, Relationship
+
+from app.models.base import ModelBase
 
 if TYPE_CHECKING:
     from app.models.problem import Problem

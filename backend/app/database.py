@@ -1,6 +1,6 @@
 import logging
 
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session, SQLModel, create_engine, select
 
 from app.core.config import settings
 
@@ -22,6 +22,13 @@ def create_db_and_tables():
     from app.models.user import User
 
     SQLModel.metadata.create_all(engine)
+
+    # add default user
+    with Session(engine) as session:
+        user = session.exec(select(User).where(User.name == "David Andrews")).first()
+        if user is None:
+            session.add(User(name="David Andrews", permissions="admin", creator_id=-1))
+            session.commit()
 
 
 def get_session():
