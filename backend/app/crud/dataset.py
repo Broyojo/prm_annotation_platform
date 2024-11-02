@@ -89,7 +89,6 @@ class CRUDDataset(CRUDBase):
         try:
             self.session.delete(db_dataset)
             self.session.commit()
-            self.session.refresh(db_dataset)
             return DatasetRead.model_validate(db_dataset)
         except Exception as e:
             self.session.rollback()

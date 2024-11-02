@@ -57,7 +57,6 @@ class CRUDIssue(CRUDBase):
         try:
             self.session.delete(db_issue)
             self.session.commit()
-            self.session.refresh(db_issue)
             return IssueRead.model_validate(db_issue)
         except Exception as e:
             self.session.rollback()

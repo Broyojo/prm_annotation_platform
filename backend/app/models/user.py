@@ -1,9 +1,10 @@
 import secrets
 from typing import TYPE_CHECKING
 
-from app.models.base import ModelBase
 from pydantic import field_validator
 from sqlmodel import Field, Relationship
+
+from app.models.base import ModelBase
 
 if TYPE_CHECKING:
     from app.models.annotation import Annotation
@@ -22,6 +23,10 @@ class User(ModelBase, table=True, creator_relationship="users"):
     datasets: list["Dataset"] = Relationship(back_populates="creator")
     issues: list["Issue"] = Relationship(back_populates="creator")
     problems: list["Problem"] = Relationship(back_populates="creator")
+
+    creator: "User" = Relationship(
+        back_populates="users", sa_relationship_kwargs={"remote_side": "[User.id]"}
+    )
 
     @field_validator("permissions")
     def validate_permissions(cls, v):

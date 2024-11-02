@@ -1,8 +1,9 @@
-from app.database import get_session
-from app.models.user import User
 from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import APIKeyHeader
 from sqlmodel import select
+
+from app.database import get_session
+from app.models.user import User
 
 header_scheme = APIKeyHeader(name="x-key")
 

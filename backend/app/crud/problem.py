@@ -70,7 +70,6 @@ class CRUDProblem(CRUDBase):
         try:
             self.session.delete(db_problem)
             self.session.commit()
-            self.session.refresh(db_problem)
             return ProblemRead.model_validate(db_problem)
         except Exception as e:
             self.session.rollback()

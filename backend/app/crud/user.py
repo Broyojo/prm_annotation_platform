@@ -14,7 +14,7 @@ from app.schemas.user import UserCreate, UserRead, UserUpdate
 
 class CRUDUser(CRUDBase):
     def create(self, user_create: UserCreate) -> UserRead:
-        if self.api_user != "admin":
+        if self.api_user.permissions != "admin":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Non-admin user cannot add new users",
@@ -96,7 +96,6 @@ class CRUDUser(CRUDBase):
         try:
             self.session.delete(db_user)
             self.session.commit()
-            self.session.refresh(db_user)
             return UserRead.model_validate(db_user)
         except Exception as e:
             self.session.rollback()

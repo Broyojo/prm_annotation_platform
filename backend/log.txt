@@ -1,0 +1,2505 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.0, pytest-8.3.3, pluggy-1.5.0
+rootdir: /Users/broyojo/code/projects/prm_annotation_platform/backend
+plugins: Faker-30.8.2, anyio-4.6.2.post1
+collected 32 items
+
+test_main.py FFFFFF.FF.FF.FF.FFFFFFF.....FFFF                            [100%]
+
+=================================== FAILURES ===================================
+__________________________ TestUsers.test_create_user __________________________
+
+self = <test_main.TestUsers object at 0x1088616d0>
+client = <starlette.testclient.TestClient object at 0x1089056a0>
+fake_user = <function fake_user.<locals>._create_user at 0x1089709a0>
+fake_admin_user = User(id=1, creator_id=-1, api_key='QIH__HfWWqukEWGWn82oOX0wEY2nKqbfiz6i3L3btOM', created_at=datetime.datetime(2024, 11..., 255835), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 32, 255840), name='Matthew Suarez', permissions='admin')
+
+    def test_create_user(self, client: TestClient, fake_user, fake_admin_user):
+        user = fake_user()
+        response = client.post(
+            "/api/v1/users/",
+            headers={"x-key": fake_admin_user.api_key},
+            json=user.model_dump(),
+        )
+>       assert response.status_code == 200
+E       assert 403 == 200
+E        +  where 403 = <Response [403 Forbidden]>.status_code
+
+test_main.py:165: AssertionError
+__________________________ TestUsers.test_read_users ___________________________
+
+self = <test_main.TestUsers object at 0x108861810>
+client = <starlette.testclient.TestClient object at 0x108983c50>
+fake_admin_user = User(id=1, creator_id=-1, api_key='SHejSOKDtx4rU7Bv13qYeHdaqQ3A1wd56eYOCpi9B3w', created_at=datetime.datetime(2024, 11...90229), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 32, 290232), name='Tanner Villarreal', permissions='admin')
+
+    def test_read_users(self, client: TestClient, fake_admin_user):
+>       response = client.get(
+            "/api/v1/users/", headers={"x-key": fake_admin_user.api_key}
+        )
+
+test_main.py:173: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/starlette/testclient.py:514: in get
+    return super().get(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1066: in get
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/users.py:30: in read_users
+    return CRUDUser(session, api_user).read_all()
+app/crud/user.py:48: in read_all
+    return [UserRead.model_validate(user) for user in db_users]
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:848: in model_validate
+    return sqlmodel_validate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'app.schemas.user.UserRead'>
+obj = User(id=1, creator_id=-1, api_key='SHejSOKDtx4rU7Bv13qYeHdaqQ3A1wd56eYOCpi9B3w', created_at=datetime.datetime(2024, 11...90229), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 32, 290232), name='Tanner Villarreal', permissions='admin')
+
+    def sqlmodel_validate(
+        cls: Type[_TSQLModel],
+        obj: Any,
+        *,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
+        update: Union[Dict[str, Any], None] = None,
+    ) -> _TSQLModel:
+        if not is_table_model_class(cls):
+            new_obj: _TSQLModel = cls.__new__(cls)
+        else:
+            # If table, create the new instance normally to make SQLAlchemy create
+            # the _sa_instance_state attribute
+            # The wrapper of this function should use with _partial_init()
+            with partial_init():
+                new_obj = cls()
+        # SQLModel Override to get class SQLAlchemy __dict__ attributes and
+        # set them back in after creating the object
+        old_dict = new_obj.__dict__.copy()
+        use_obj = obj
+        if isinstance(obj, dict) and update:
+            use_obj = {**obj, **update}
+        elif update:
+            use_obj = ObjectWithUpdateWrapper(obj=obj, update=update)
+>       cls.__pydantic_validator__.validate_python(
+            use_obj,
+            strict=strict,
+            from_attributes=from_attributes,
+            context=context,
+            self_instance=new_obj,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for UserRead
+E       version
+E         Field required [type=missing, input_value=User(id=1, creator_id=-1,...l', permissions='admin'), input_type=User]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_from
+E         Field required [type=missing, input_value=User(id=1, creator_id=-1,...l', permissions='admin'), input_type=User]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_to
+E         Field required [type=missing, input_value=User(id=1, creator_id=-1,...l', permissions='admin'), input_type=User]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       modifier_id
+E         Field required [type=missing, input_value=User(id=1, creator_id=-1,...l', permissions='admin'), input_type=User]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:320: ValidationError
+___________________________ TestUsers.test_read_user ___________________________
+
+self = <test_main.TestUsers object at 0x1084e5350>
+client = <starlette.testclient.TestClient object at 0x108863ed0>
+fake_user = <function fake_user.<locals>._create_user at 0x108a5fa60>
+fake_admin_user = User(id=1, creator_id=-1, api_key='VQ3_Fp_ro29c_FK2gz7eRsztkQEw2oG5bQiEOiJoQoo', created_at=datetime.datetime(2024, 11..., 474227), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 32, 474233), name='Andrew Beasley', permissions='admin')
+
+    def test_read_user(self, client: TestClient, fake_user, fake_admin_user):
+>       created_user = self.test_create_user(client, fake_user, fake_admin_user)
+
+test_main.py:180: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <test_main.TestUsers object at 0x1084e5350>
+client = <starlette.testclient.TestClient object at 0x108863ed0>
+fake_user = <function fake_user.<locals>._create_user at 0x108a5fa60>
+fake_admin_user = User(id=1, creator_id=-1, api_key='VQ3_Fp_ro29c_FK2gz7eRsztkQEw2oG5bQiEOiJoQoo', created_at=datetime.datetime(2024, 11..., 474227), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 32, 474233), name='Andrew Beasley', permissions='admin')
+
+    def test_create_user(self, client: TestClient, fake_user, fake_admin_user):
+        user = fake_user()
+        response = client.post(
+            "/api/v1/users/",
+            headers={"x-key": fake_admin_user.api_key},
+            json=user.model_dump(),
+        )
+>       assert response.status_code == 200
+E       assert 403 == 200
+E        +  where 403 = <Response [403 Forbidden]>.status_code
+
+test_main.py:165: AssertionError
+__________________________ TestUsers.test_update_user __________________________
+
+self = <test_main.TestUsers object at 0x1084e5480>
+client = <starlette.testclient.TestClient object at 0x108a07e10>
+fake_user = <function fake_user.<locals>._create_user at 0x1090de660>
+fake_admin_user = User(id=1, creator_id=-1, api_key='-b8cG3ZxeOM_Dc-Zj0aDvfO0ptzTA5aKBx36LROvEQY', created_at=datetime.datetime(2024, 11...045), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 32, 485047), name='Jacqueline Peterson', permissions='admin')
+
+    def test_update_user(self, client: TestClient, fake_user, fake_admin_user):
+>       created_user = self.test_create_user(client, fake_user, fake_admin_user)
+
+test_main.py:191: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <test_main.TestUsers object at 0x1084e5480>
+client = <starlette.testclient.TestClient object at 0x108a07e10>
+fake_user = <function fake_user.<locals>._create_user at 0x1090de660>
+fake_admin_user = User(id=1, creator_id=-1, api_key='-b8cG3ZxeOM_Dc-Zj0aDvfO0ptzTA5aKBx36LROvEQY', created_at=datetime.datetime(2024, 11...045), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 32, 485047), name='Jacqueline Peterson', permissions='admin')
+
+    def test_create_user(self, client: TestClient, fake_user, fake_admin_user):
+        user = fake_user()
+        response = client.post(
+            "/api/v1/users/",
+            headers={"x-key": fake_admin_user.api_key},
+            json=user.model_dump(),
+        )
+>       assert response.status_code == 200
+E       assert 403 == 200
+E        +  where 403 = <Response [403 Forbidden]>.status_code
+
+test_main.py:165: AssertionError
+__________________________ TestUsers.test_delete_user __________________________
+
+self = <test_main.TestUsers object at 0x108897d10>
+client = <starlette.testclient.TestClient object at 0x108fd1810>
+fake_user = <function fake_user.<locals>._create_user at 0x1090df2e0>
+fake_admin_user = User(id=1, creator_id=-1, api_key='aRGsrD8ojMS6xBVhppF5e76kogrn1Ng3RkE0cErB_yA', created_at=datetime.datetime(2024, 11...32, 494653), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 32, 494655), name='April Branch', permissions='admin')
+
+    def test_delete_user(self, client: TestClient, fake_user, fake_admin_user):
+>       created_user = self.test_create_user(client, fake_user, fake_admin_user)
+
+test_main.py:202: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <test_main.TestUsers object at 0x108897d10>
+client = <starlette.testclient.TestClient object at 0x108fd1810>
+fake_user = <function fake_user.<locals>._create_user at 0x1090df2e0>
+fake_admin_user = User(id=1, creator_id=-1, api_key='aRGsrD8ojMS6xBVhppF5e76kogrn1Ng3RkE0cErB_yA', created_at=datetime.datetime(2024, 11...32, 494653), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 32, 494655), name='April Branch', permissions='admin')
+
+    def test_create_user(self, client: TestClient, fake_user, fake_admin_user):
+        user = fake_user()
+        response = client.post(
+            "/api/v1/users/",
+            headers={"x-key": fake_admin_user.api_key},
+            json=user.model_dump(),
+        )
+>       assert response.status_code == 200
+E       assert 403 == 200
+E        +  where 403 = <Response [403 Forbidden]>.status_code
+
+test_main.py:165: AssertionError
+_______________________ TestDatasets.test_create_dataset _______________________
+
+self = <test_main.TestDatasets object at 0x108861950>
+client = <starlette.testclient.TestClient object at 0x108ae56d0>
+fake_dataset = <function fake_dataset.<locals>._create_dataset at 0x108ff8ea0>
+fake_admin_user = User()
+
+    def test_create_dataset(self, client: TestClient, fake_dataset, fake_admin_user):
+        dataset = fake_dataset()
+>       response = client.post(
+            "/api/v1/datasets/",
+            headers={"x-key": fake_admin_user.api_key},
+            json=dataset.model_dump(),
+        )
+
+test_main.py:213: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/starlette/testclient.py:593: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/datasets.py:22: in create_dataset
+    return CRUDDataset(session, api_user).create(dataset_create)
+app/crud/dataset.py:24: in create
+    raise e
+app/crud/dataset.py:21: in create
+    return DatasetRead.model_validate(db_dataset)
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:848: in model_validate
+    return sqlmodel_validate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'app.schemas.dataset.DatasetRead'>, obj = Dataset()
+
+    def sqlmodel_validate(
+        cls: Type[_TSQLModel],
+        obj: Any,
+        *,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
+        update: Union[Dict[str, Any], None] = None,
+    ) -> _TSQLModel:
+        if not is_table_model_class(cls):
+            new_obj: _TSQLModel = cls.__new__(cls)
+        else:
+            # If table, create the new instance normally to make SQLAlchemy create
+            # the _sa_instance_state attribute
+            # The wrapper of this function should use with _partial_init()
+            with partial_init():
+                new_obj = cls()
+        # SQLModel Override to get class SQLAlchemy __dict__ attributes and
+        # set them back in after creating the object
+        old_dict = new_obj.__dict__.copy()
+        use_obj = obj
+        if isinstance(obj, dict) and update:
+            use_obj = {**obj, **update}
+        elif update:
+            use_obj = ObjectWithUpdateWrapper(obj=obj, update=update)
+>       cls.__pydantic_validator__.validate_python(
+            use_obj,
+            strict=strict,
+            from_attributes=from_attributes,
+            context=context,
+            self_instance=new_obj,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for DatasetRead
+E       version
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_from
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_to
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       modifier_id
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:320: ValidationError
+________________________ TestDatasets.test_read_dataset ________________________
+
+self = <test_main.TestDatasets object at 0x1084e55b0>
+client = <starlette.testclient.TestClient object at 0x108a9c8d0>
+fake_dataset = <function fake_dataset.<locals>._create_dataset at 0x1090dd580>
+fake_admin_user = User()
+
+    def test_read_dataset(self, client: TestClient, fake_dataset, fake_admin_user):
+>       created_dataset = self.test_create_dataset(
+            client, fake_dataset, fake_admin_user
+        )
+
+test_main.py:232: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test_main.py:213: in test_create_dataset
+    response = client.post(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:593: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/datasets.py:22: in create_dataset
+    return CRUDDataset(session, api_user).create(dataset_create)
+app/crud/dataset.py:24: in create
+    raise e
+app/crud/dataset.py:21: in create
+    return DatasetRead.model_validate(db_dataset)
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:848: in model_validate
+    return sqlmodel_validate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'app.schemas.dataset.DatasetRead'>, obj = Dataset()
+
+    def sqlmodel_validate(
+        cls: Type[_TSQLModel],
+        obj: Any,
+        *,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
+        update: Union[Dict[str, Any], None] = None,
+    ) -> _TSQLModel:
+        if not is_table_model_class(cls):
+            new_obj: _TSQLModel = cls.__new__(cls)
+        else:
+            # If table, create the new instance normally to make SQLAlchemy create
+            # the _sa_instance_state attribute
+            # The wrapper of this function should use with _partial_init()
+            with partial_init():
+                new_obj = cls()
+        # SQLModel Override to get class SQLAlchemy __dict__ attributes and
+        # set them back in after creating the object
+        old_dict = new_obj.__dict__.copy()
+        use_obj = obj
+        if isinstance(obj, dict) and update:
+            use_obj = {**obj, **update}
+        elif update:
+            use_obj = ObjectWithUpdateWrapper(obj=obj, update=update)
+>       cls.__pydantic_validator__.validate_python(
+            use_obj,
+            strict=strict,
+            from_attributes=from_attributes,
+            context=context,
+            self_instance=new_obj,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for DatasetRead
+E       version
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_from
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_to
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       modifier_id
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:320: ValidationError
+_______________________ TestProblems.test_create_problem _______________________
+
+self = <test_main.TestProblems object at 0x108861bd0>
+client = <starlette.testclient.TestClient object at 0x10903e350>
+fake_problem = <function fake_problem.<locals>._create_problem at 0x10901db20>
+fake_dataset = <function fake_dataset.<locals>._create_dataset at 0x10901de40>
+fake_admin_user = User()
+
+    def test_create_problem(
+        self, client: TestClient, fake_problem, fake_dataset, fake_admin_user
+    ):
+        # First create a dataset to associate with the problem
+>       dataset_response = client.post(
+            "/api/v1/datasets/",
+            headers={"x-key": fake_admin_user.api_key},
+            json=fake_dataset().model_dump(),
+        )
+
+test_main.py:250: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/starlette/testclient.py:593: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/datasets.py:22: in create_dataset
+    return CRUDDataset(session, api_user).create(dataset_create)
+app/crud/dataset.py:24: in create
+    raise e
+app/crud/dataset.py:21: in create
+    return DatasetRead.model_validate(db_dataset)
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:848: in model_validate
+    return sqlmodel_validate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'app.schemas.dataset.DatasetRead'>, obj = Dataset()
+
+    def sqlmodel_validate(
+        cls: Type[_TSQLModel],
+        obj: Any,
+        *,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
+        update: Union[Dict[str, Any], None] = None,
+    ) -> _TSQLModel:
+        if not is_table_model_class(cls):
+            new_obj: _TSQLModel = cls.__new__(cls)
+        else:
+            # If table, create the new instance normally to make SQLAlchemy create
+            # the _sa_instance_state attribute
+            # The wrapper of this function should use with _partial_init()
+            with partial_init():
+                new_obj = cls()
+        # SQLModel Override to get class SQLAlchemy __dict__ attributes and
+        # set them back in after creating the object
+        old_dict = new_obj.__dict__.copy()
+        use_obj = obj
+        if isinstance(obj, dict) and update:
+            use_obj = {**obj, **update}
+        elif update:
+            use_obj = ObjectWithUpdateWrapper(obj=obj, update=update)
+>       cls.__pydantic_validator__.validate_python(
+            use_obj,
+            strict=strict,
+            from_attributes=from_attributes,
+            context=context,
+            self_instance=new_obj,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for DatasetRead
+E       version
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_from
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_to
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       modifier_id
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:320: ValidationError
+________________________ TestProblems.test_read_problem ________________________
+
+self = <test_main.TestProblems object at 0x1084e56e0>
+client = <starlette.testclient.TestClient object at 0x109029130>
+fake_problem = <function fake_problem.<locals>._create_problem at 0x10901f4c0>
+fake_dataset = <function fake_dataset.<locals>._create_dataset at 0x10901d9e0>
+fake_admin_user = User()
+
+    def test_read_problem(
+        self, client: TestClient, fake_problem, fake_dataset, fake_admin_user
+    ):
+>       created_problem = self.test_create_problem(
+            client, fake_problem, fake_dataset, fake_admin_user
+        )
+
+test_main.py:279: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test_main.py:250: in test_create_problem
+    dataset_response = client.post(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:593: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/datasets.py:22: in create_dataset
+    return CRUDDataset(session, api_user).create(dataset_create)
+app/crud/dataset.py:24: in create
+    raise e
+app/crud/dataset.py:21: in create
+    return DatasetRead.model_validate(db_dataset)
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:848: in model_validate
+    return sqlmodel_validate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'app.schemas.dataset.DatasetRead'>, obj = Dataset()
+
+    def sqlmodel_validate(
+        cls: Type[_TSQLModel],
+        obj: Any,
+        *,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
+        update: Union[Dict[str, Any], None] = None,
+    ) -> _TSQLModel:
+        if not is_table_model_class(cls):
+            new_obj: _TSQLModel = cls.__new__(cls)
+        else:
+            # If table, create the new instance normally to make SQLAlchemy create
+            # the _sa_instance_state attribute
+            # The wrapper of this function should use with _partial_init()
+            with partial_init():
+                new_obj = cls()
+        # SQLModel Override to get class SQLAlchemy __dict__ attributes and
+        # set them back in after creating the object
+        old_dict = new_obj.__dict__.copy()
+        use_obj = obj
+        if isinstance(obj, dict) and update:
+            use_obj = {**obj, **update}
+        elif update:
+            use_obj = ObjectWithUpdateWrapper(obj=obj, update=update)
+>       cls.__pydantic_validator__.validate_python(
+            use_obj,
+            strict=strict,
+            from_attributes=from_attributes,
+            context=context,
+            self_instance=new_obj,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for DatasetRead
+E       version
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_from
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_to
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       modifier_id
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:320: ValidationError
+____________________ TestAnnotations.test_create_annotation ____________________
+
+self = <test_main.TestAnnotations object at 0x108861e50>
+client = <starlette.testclient.TestClient object at 0x1094a4d70>
+fake_annotation = <function fake_annotation.<locals>._create_annotation at 0x1094a2980>
+fake_problem = <function fake_problem.<locals>._create_problem at 0x1094a27a0>
+fake_dataset = <function fake_dataset.<locals>._create_dataset at 0x1094a2660>
+fake_admin_user = User()
+
+    def test_create_annotation(
+        self,
+        client: TestClient,
+        fake_annotation,
+        fake_problem,
+        fake_dataset,
+        fake_admin_user,
+    ):
+>       problem = TestProblems.test_create_problem(
+            TestProblems(), client, fake_problem, fake_dataset, fake_admin_user
+        )
+
+test_main.py:301: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test_main.py:250: in test_create_problem
+    dataset_response = client.post(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:593: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/datasets.py:22: in create_dataset
+    return CRUDDataset(session, api_user).create(dataset_create)
+app/crud/dataset.py:24: in create
+    raise e
+app/crud/dataset.py:21: in create
+    return DatasetRead.model_validate(db_dataset)
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:848: in model_validate
+    return sqlmodel_validate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'app.schemas.dataset.DatasetRead'>, obj = Dataset()
+
+    def sqlmodel_validate(
+        cls: Type[_TSQLModel],
+        obj: Any,
+        *,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
+        update: Union[Dict[str, Any], None] = None,
+    ) -> _TSQLModel:
+        if not is_table_model_class(cls):
+            new_obj: _TSQLModel = cls.__new__(cls)
+        else:
+            # If table, create the new instance normally to make SQLAlchemy create
+            # the _sa_instance_state attribute
+            # The wrapper of this function should use with _partial_init()
+            with partial_init():
+                new_obj = cls()
+        # SQLModel Override to get class SQLAlchemy __dict__ attributes and
+        # set them back in after creating the object
+        old_dict = new_obj.__dict__.copy()
+        use_obj = obj
+        if isinstance(obj, dict) and update:
+            use_obj = {**obj, **update}
+        elif update:
+            use_obj = ObjectWithUpdateWrapper(obj=obj, update=update)
+>       cls.__pydantic_validator__.validate_python(
+            use_obj,
+            strict=strict,
+            from_attributes=from_attributes,
+            context=context,
+            self_instance=new_obj,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for DatasetRead
+E       version
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_from
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_to
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       modifier_id
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:320: ValidationError
+_____________________ TestAnnotations.test_read_annotation _____________________
+
+self = <test_main.TestAnnotations object at 0x1084e5810>
+client = <starlette.testclient.TestClient object at 0x1094be7b0>
+fake_annotation = <function fake_annotation.<locals>._create_annotation at 0x1094ab7e0>
+fake_problem = <function fake_problem.<locals>._create_problem at 0x1094ab880>
+fake_dataset = <function fake_dataset.<locals>._create_dataset at 0x1094ab920>
+fake_admin_user = User()
+
+    def test_read_annotation(
+        self,
+        client: TestClient,
+        fake_annotation,
+        fake_problem,
+        fake_dataset,
+        fake_admin_user,
+    ):
+>       created_annotation = self.test_create_annotation(
+            client, fake_annotation, fake_problem, fake_dataset, fake_admin_user
+        )
+
+test_main.py:331: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test_main.py:301: in test_create_annotation
+    problem = TestProblems.test_create_problem(
+test_main.py:250: in test_create_problem
+    dataset_response = client.post(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:593: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/datasets.py:22: in create_dataset
+    return CRUDDataset(session, api_user).create(dataset_create)
+app/crud/dataset.py:24: in create
+    raise e
+app/crud/dataset.py:21: in create
+    return DatasetRead.model_validate(db_dataset)
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:848: in model_validate
+    return sqlmodel_validate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'app.schemas.dataset.DatasetRead'>, obj = Dataset()
+
+    def sqlmodel_validate(
+        cls: Type[_TSQLModel],
+        obj: Any,
+        *,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
+        update: Union[Dict[str, Any], None] = None,
+    ) -> _TSQLModel:
+        if not is_table_model_class(cls):
+            new_obj: _TSQLModel = cls.__new__(cls)
+        else:
+            # If table, create the new instance normally to make SQLAlchemy create
+            # the _sa_instance_state attribute
+            # The wrapper of this function should use with _partial_init()
+            with partial_init():
+                new_obj = cls()
+        # SQLModel Override to get class SQLAlchemy __dict__ attributes and
+        # set them back in after creating the object
+        old_dict = new_obj.__dict__.copy()
+        use_obj = obj
+        if isinstance(obj, dict) and update:
+            use_obj = {**obj, **update}
+        elif update:
+            use_obj = ObjectWithUpdateWrapper(obj=obj, update=update)
+>       cls.__pydantic_validator__.validate_python(
+            use_obj,
+            strict=strict,
+            from_attributes=from_attributes,
+            context=context,
+            self_instance=new_obj,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for DatasetRead
+E       version
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_from
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_to
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       modifier_id
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:320: ValidationError
+_________________________ TestIssues.test_create_issue _________________________
+
+self = <test_main.TestIssues object at 0x1088620d0>
+client = <starlette.testclient.TestClient object at 0x109517a10>
+fake_issue = <function fake_issue.<locals>._create_issue at 0x10949f240>
+fake_problem = <function fake_problem.<locals>._create_problem at 0x10949f060>
+fake_dataset = <function fake_dataset.<locals>._create_dataset at 0x10949e700>
+fake_admin_user = User()
+
+    def test_create_issue(
+        self,
+        client: TestClient,
+        fake_issue,
+        fake_problem,
+        fake_dataset,
+        fake_admin_user,
+    ):
+>       problem = TestProblems.test_create_problem(
+            TestProblems(), client, fake_problem, fake_dataset, fake_admin_user
+        )
+
+test_main.py:352: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test_main.py:250: in test_create_problem
+    dataset_response = client.post(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:593: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/datasets.py:22: in create_dataset
+    return CRUDDataset(session, api_user).create(dataset_create)
+app/crud/dataset.py:24: in create
+    raise e
+app/crud/dataset.py:21: in create
+    return DatasetRead.model_validate(db_dataset)
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:848: in model_validate
+    return sqlmodel_validate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'app.schemas.dataset.DatasetRead'>, obj = Dataset()
+
+    def sqlmodel_validate(
+        cls: Type[_TSQLModel],
+        obj: Any,
+        *,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
+        update: Union[Dict[str, Any], None] = None,
+    ) -> _TSQLModel:
+        if not is_table_model_class(cls):
+            new_obj: _TSQLModel = cls.__new__(cls)
+        else:
+            # If table, create the new instance normally to make SQLAlchemy create
+            # the _sa_instance_state attribute
+            # The wrapper of this function should use with _partial_init()
+            with partial_init():
+                new_obj = cls()
+        # SQLModel Override to get class SQLAlchemy __dict__ attributes and
+        # set them back in after creating the object
+        old_dict = new_obj.__dict__.copy()
+        use_obj = obj
+        if isinstance(obj, dict) and update:
+            use_obj = {**obj, **update}
+        elif update:
+            use_obj = ObjectWithUpdateWrapper(obj=obj, update=update)
+>       cls.__pydantic_validator__.validate_python(
+            use_obj,
+            strict=strict,
+            from_attributes=from_attributes,
+            context=context,
+            self_instance=new_obj,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for DatasetRead
+E       version
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_from
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_to
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       modifier_id
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:320: ValidationError
+__________________________ TestIssues.test_read_issue __________________________
+
+self = <test_main.TestIssues object at 0x1084e5940>
+client = <starlette.testclient.TestClient object at 0x1094f5fd0>
+fake_issue = <function fake_issue.<locals>._create_issue at 0x109583a60>
+fake_problem = <function fake_problem.<locals>._create_problem at 0x109583ba0>
+fake_dataset = <function fake_dataset.<locals>._create_dataset at 0x109583c40>
+fake_admin_user = User()
+
+    def test_read_issue(
+        self,
+        client: TestClient,
+        fake_issue,
+        fake_problem,
+        fake_dataset,
+        fake_admin_user,
+    ):
+>       created_issue = self.test_create_issue(
+            client, fake_issue, fake_problem, fake_dataset, fake_admin_user
+        )
+
+test_main.py:382: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test_main.py:352: in test_create_issue
+    problem = TestProblems.test_create_problem(
+test_main.py:250: in test_create_problem
+    dataset_response = client.post(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:593: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/datasets.py:22: in create_dataset
+    return CRUDDataset(session, api_user).create(dataset_create)
+app/crud/dataset.py:24: in create
+    raise e
+app/crud/dataset.py:21: in create
+    return DatasetRead.model_validate(db_dataset)
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:848: in model_validate
+    return sqlmodel_validate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'app.schemas.dataset.DatasetRead'>, obj = Dataset()
+
+    def sqlmodel_validate(
+        cls: Type[_TSQLModel],
+        obj: Any,
+        *,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
+        update: Union[Dict[str, Any], None] = None,
+    ) -> _TSQLModel:
+        if not is_table_model_class(cls):
+            new_obj: _TSQLModel = cls.__new__(cls)
+        else:
+            # If table, create the new instance normally to make SQLAlchemy create
+            # the _sa_instance_state attribute
+            # The wrapper of this function should use with _partial_init()
+            with partial_init():
+                new_obj = cls()
+        # SQLModel Override to get class SQLAlchemy __dict__ attributes and
+        # set them back in after creating the object
+        old_dict = new_obj.__dict__.copy()
+        use_obj = obj
+        if isinstance(obj, dict) and update:
+            use_obj = {**obj, **update}
+        elif update:
+            use_obj = ObjectWithUpdateWrapper(obj=obj, update=update)
+>       cls.__pydantic_validator__.validate_python(
+            use_obj,
+            strict=strict,
+            from_attributes=from_attributes,
+            context=context,
+            self_instance=new_obj,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for DatasetRead
+E       version
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_from
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_to
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       modifier_id
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:320: ValidationError
+______________________________ test_user_problems ______________________________
+
+client = <starlette.testclient.TestClient object at 0x10957fa10>
+fake_user = <function fake_user.<locals>._create_user at 0x109677f60>
+fake_admin_user = User(id=1, creator_id=-1, api_key='HuXxWoJXXALagjcteA02CmFiOAlgXltVX7fcJYAaPEI', created_at=datetime.datetime(2024, 11... 33, 644849), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 33, 644853), name='Glenn Rojas', permissions='admin')
+
+    def test_user_problems(client: TestClient, fake_user, fake_admin_user):
+>       user = TestUsers.test_create_user(TestUsers(), client, fake_user, fake_admin_user)
+
+test_main.py:396: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <test_main.TestUsers object at 0x1094ca9c0>
+client = <starlette.testclient.TestClient object at 0x10957fa10>
+fake_user = <function fake_user.<locals>._create_user at 0x109677f60>
+fake_admin_user = User(id=1, creator_id=-1, api_key='HuXxWoJXXALagjcteA02CmFiOAlgXltVX7fcJYAaPEI', created_at=datetime.datetime(2024, 11... 33, 644849), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 33, 644853), name='Glenn Rojas', permissions='admin')
+
+    def test_create_user(self, client: TestClient, fake_user, fake_admin_user):
+        user = fake_user()
+        response = client.post(
+            "/api/v1/users/",
+            headers={"x-key": fake_admin_user.api_key},
+            json=user.model_dump(),
+        )
+>       assert response.status_code == 200
+E       assert 403 == 200
+E        +  where 403 = <Response [403 Forbidden]>.status_code
+
+test_main.py:165: AssertionError
+____________________________ test_user_annotations _____________________________
+
+client = <starlette.testclient.TestClient object at 0x109601a90>
+fake_user = <function fake_user.<locals>._create_user at 0x1096200e0>
+fake_admin_user = User(id=1, creator_id=-1, api_key='NPEdSvTwZQGez-rTEzGy_2TPb2EJjj9YgCkUuoPykP0', created_at=datetime.datetime(2024, 11...3, 655119), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 33, 655120), name='Robert Nelson', permissions='admin')
+
+    def test_user_annotations(client: TestClient, fake_user, fake_admin_user):
+>       user = TestUsers.test_create_user(TestUsers(), client, fake_user, fake_admin_user)
+
+test_main.py:406: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <test_main.TestUsers object at 0x1094cb350>
+client = <starlette.testclient.TestClient object at 0x109601a90>
+fake_user = <function fake_user.<locals>._create_user at 0x1096200e0>
+fake_admin_user = User(id=1, creator_id=-1, api_key='NPEdSvTwZQGez-rTEzGy_2TPb2EJjj9YgCkUuoPykP0', created_at=datetime.datetime(2024, 11...3, 655119), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 33, 655120), name='Robert Nelson', permissions='admin')
+
+    def test_create_user(self, client: TestClient, fake_user, fake_admin_user):
+        user = fake_user()
+        response = client.post(
+            "/api/v1/users/",
+            headers={"x-key": fake_admin_user.api_key},
+            json=user.model_dump(),
+        )
+>       assert response.status_code == 200
+E       assert 403 == 200
+E        +  where 403 = <Response [403 Forbidden]>.status_code
+
+test_main.py:165: AssertionError
+____________________________ test_dataset_problems _____________________________
+
+client = <starlette.testclient.TestClient object at 0x1096389f0>
+fake_dataset = <function fake_dataset.<locals>._create_dataset at 0x109623560>
+fake_admin_user = User()
+
+    def test_dataset_problems(client: TestClient, fake_dataset, fake_admin_user):
+>       dataset = TestDatasets.test_create_dataset(
+            TestDatasets(), client, fake_dataset, fake_admin_user
+        )
+
+test_main.py:416: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test_main.py:213: in test_create_dataset
+    response = client.post(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:593: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/datasets.py:22: in create_dataset
+    return CRUDDataset(session, api_user).create(dataset_create)
+app/crud/dataset.py:24: in create
+    raise e
+app/crud/dataset.py:21: in create
+    return DatasetRead.model_validate(db_dataset)
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:848: in model_validate
+    return sqlmodel_validate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'app.schemas.dataset.DatasetRead'>, obj = Dataset()
+
+    def sqlmodel_validate(
+        cls: Type[_TSQLModel],
+        obj: Any,
+        *,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
+        update: Union[Dict[str, Any], None] = None,
+    ) -> _TSQLModel:
+        if not is_table_model_class(cls):
+            new_obj: _TSQLModel = cls.__new__(cls)
+        else:
+            # If table, create the new instance normally to make SQLAlchemy create
+            # the _sa_instance_state attribute
+            # The wrapper of this function should use with _partial_init()
+            with partial_init():
+                new_obj = cls()
+        # SQLModel Override to get class SQLAlchemy __dict__ attributes and
+        # set them back in after creating the object
+        old_dict = new_obj.__dict__.copy()
+        use_obj = obj
+        if isinstance(obj, dict) and update:
+            use_obj = {**obj, **update}
+        elif update:
+            use_obj = ObjectWithUpdateWrapper(obj=obj, update=update)
+>       cls.__pydantic_validator__.validate_python(
+            use_obj,
+            strict=strict,
+            from_attributes=from_attributes,
+            context=context,
+            self_instance=new_obj,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for DatasetRead
+E       version
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_from
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_to
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       modifier_id
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:320: ValidationError
+___________________________ test_problem_annotations ___________________________
+
+client = <starlette.testclient.TestClient object at 0x1094f5470>
+fake_problem = <function fake_problem.<locals>._create_problem at 0x109677ec0>
+fake_dataset = <function fake_dataset.<locals>._create_dataset at 0x1096772e0>
+fake_admin_user = User()
+
+    def test_problem_annotations(
+        client: TestClient, fake_problem, fake_dataset, fake_admin_user
+    ):
+>       problem = TestProblems.test_create_problem(
+            TestProblems(), client, fake_problem, fake_dataset, fake_admin_user
+        )
+
+test_main.py:430: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test_main.py:250: in test_create_problem
+    dataset_response = client.post(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:593: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/datasets.py:22: in create_dataset
+    return CRUDDataset(session, api_user).create(dataset_create)
+app/crud/dataset.py:24: in create
+    raise e
+app/crud/dataset.py:21: in create
+    return DatasetRead.model_validate(db_dataset)
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:848: in model_validate
+    return sqlmodel_validate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'app.schemas.dataset.DatasetRead'>, obj = Dataset()
+
+    def sqlmodel_validate(
+        cls: Type[_TSQLModel],
+        obj: Any,
+        *,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
+        update: Union[Dict[str, Any], None] = None,
+    ) -> _TSQLModel:
+        if not is_table_model_class(cls):
+            new_obj: _TSQLModel = cls.__new__(cls)
+        else:
+            # If table, create the new instance normally to make SQLAlchemy create
+            # the _sa_instance_state attribute
+            # The wrapper of this function should use with _partial_init()
+            with partial_init():
+                new_obj = cls()
+        # SQLModel Override to get class SQLAlchemy __dict__ attributes and
+        # set them back in after creating the object
+        old_dict = new_obj.__dict__.copy()
+        use_obj = obj
+        if isinstance(obj, dict) and update:
+            use_obj = {**obj, **update}
+        elif update:
+            use_obj = ObjectWithUpdateWrapper(obj=obj, update=update)
+>       cls.__pydantic_validator__.validate_python(
+            use_obj,
+            strict=strict,
+            from_attributes=from_attributes,
+            context=context,
+            self_instance=new_obj,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for DatasetRead
+E       version
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_from
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_to
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       modifier_id
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:320: ValidationError
+_____________________________ test_dataset_issues ______________________________
+
+client = <starlette.testclient.TestClient object at 0x109638e50>
+fake_dataset = <function fake_dataset.<locals>._create_dataset at 0x109605d00>
+fake_admin_user = User()
+
+    def test_dataset_issues(client: TestClient, fake_dataset, fake_admin_user):
+>       dataset = TestDatasets.test_create_dataset(
+            TestDatasets(), client, fake_dataset, fake_admin_user
+        )
+
+test_main.py:442: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test_main.py:213: in test_create_dataset
+    response = client.post(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:593: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/datasets.py:22: in create_dataset
+    return CRUDDataset(session, api_user).create(dataset_create)
+app/crud/dataset.py:24: in create
+    raise e
+app/crud/dataset.py:21: in create
+    return DatasetRead.model_validate(db_dataset)
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:848: in model_validate
+    return sqlmodel_validate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'app.schemas.dataset.DatasetRead'>, obj = Dataset()
+
+    def sqlmodel_validate(
+        cls: Type[_TSQLModel],
+        obj: Any,
+        *,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
+        update: Union[Dict[str, Any], None] = None,
+    ) -> _TSQLModel:
+        if not is_table_model_class(cls):
+            new_obj: _TSQLModel = cls.__new__(cls)
+        else:
+            # If table, create the new instance normally to make SQLAlchemy create
+            # the _sa_instance_state attribute
+            # The wrapper of this function should use with _partial_init()
+            with partial_init():
+                new_obj = cls()
+        # SQLModel Override to get class SQLAlchemy __dict__ attributes and
+        # set them back in after creating the object
+        old_dict = new_obj.__dict__.copy()
+        use_obj = obj
+        if isinstance(obj, dict) and update:
+            use_obj = {**obj, **update}
+        elif update:
+            use_obj = ObjectWithUpdateWrapper(obj=obj, update=update)
+>       cls.__pydantic_validator__.validate_python(
+            use_obj,
+            strict=strict,
+            from_attributes=from_attributes,
+            context=context,
+            self_instance=new_obj,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for DatasetRead
+E       version
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_from
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_to
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       modifier_id
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:320: ValidationError
+_____________________________ test_problem_issues ______________________________
+
+client = <starlette.testclient.TestClient object at 0x1094d2510>
+fake_problem = <function fake_problem.<locals>._create_problem at 0x109581da0>
+fake_dataset = <function fake_dataset.<locals>._create_dataset at 0x1095814e0>
+fake_admin_user = User()
+
+    def test_problem_issues(
+        client: TestClient, fake_problem, fake_dataset, fake_admin_user
+    ):
+>       problem = TestProblems.test_create_problem(
+            TestProblems(), client, fake_problem, fake_dataset, fake_admin_user
+        )
+
+test_main.py:456: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test_main.py:250: in test_create_problem
+    dataset_response = client.post(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:593: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/datasets.py:22: in create_dataset
+    return CRUDDataset(session, api_user).create(dataset_create)
+app/crud/dataset.py:24: in create
+    raise e
+app/crud/dataset.py:21: in create
+    return DatasetRead.model_validate(db_dataset)
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:848: in model_validate
+    return sqlmodel_validate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'app.schemas.dataset.DatasetRead'>, obj = Dataset()
+
+    def sqlmodel_validate(
+        cls: Type[_TSQLModel],
+        obj: Any,
+        *,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
+        update: Union[Dict[str, Any], None] = None,
+    ) -> _TSQLModel:
+        if not is_table_model_class(cls):
+            new_obj: _TSQLModel = cls.__new__(cls)
+        else:
+            # If table, create the new instance normally to make SQLAlchemy create
+            # the _sa_instance_state attribute
+            # The wrapper of this function should use with _partial_init()
+            with partial_init():
+                new_obj = cls()
+        # SQLModel Override to get class SQLAlchemy __dict__ attributes and
+        # set them back in after creating the object
+        old_dict = new_obj.__dict__.copy()
+        use_obj = obj
+        if isinstance(obj, dict) and update:
+            use_obj = {**obj, **update}
+        elif update:
+            use_obj = ObjectWithUpdateWrapper(obj=obj, update=update)
+>       cls.__pydantic_validator__.validate_python(
+            use_obj,
+            strict=strict,
+            from_attributes=from_attributes,
+            context=context,
+            self_instance=new_obj,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for DatasetRead
+E       version
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_from
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       valid_to
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+E       modifier_id
+E         Field required [type=missing, input_value=Dataset(), input_type=Dataset]
+E           For further information visit https://errors.pydantic.dev/2.9/v/missing
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:320: ValidationError
+___________________________ test_unauthorized_access ___________________________
+
+client = <starlette.testclient.TestClient object at 0x1088e20b0>
+
+    def test_unauthorized_access(client: TestClient):
+        # Try to access without API key
+        response = client.get("/api/v1/users/")
+>       assert response.status_code == 401
+E       assert 403 == 401
+E        +  where 403 = <Response [403 Forbidden]>.status_code
+
+test_main.py:506: AssertionError
+________________________ test_invalid_problem_creation _________________________
+
+self = <sqlalchemy.engine.base.Connection object at 0x1090d4f50>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x108fa65d0>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x108a03a10>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x10903e250>
+parameters = [('2024-11-02 16:02:34.320466', '2024-11-02 16:02:34.320467', 1, 'Stand physical believe. Rate two morning idea just r...ar behind role those deal eight water sort. Consider hundred find when. Her performance field value but artist.', ...)]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+    
+        if self._echo:
+            self._log_info(str_statement)
+    
+            stats = context._get_cache_stats()
+    
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+    
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py:1967: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x108fa65d0>
+cursor = <sqlite3.Cursor object at 0x10a167740>
+statement = 'INSERT INTO problem (created_at, last_modified, creator_id, question, answer, llm_answer, steps, num_steps, is_correc...lm_name, prompt_format, final_answer, extra_metadata, dataset_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+parameters = ('2024-11-02 16:02:34.320466', '2024-11-02 16:02:34.320467', 1, 'Stand physical believe. Rate two morning idea just re...Far behind role those deal eight water sort. Consider hundred find when. Her performance field value but artist.', ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x108a03a10>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.IntegrityError: NOT NULL constraint failed: problem.dataset_id
+
+.venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py:941: IntegrityError
+
+The above exception was the direct cause of the following exception:
+
+client = <starlette.testclient.TestClient object at 0x108fdbbd0>
+fake_problem = <function fake_problem.<locals>._create_problem at 0x1090dfe20>
+fake_admin_user = User()
+
+    def test_invalid_problem_creation(client: TestClient, fake_problem, fake_admin_user):
+        # Try to create problem without dataset_id
+        problem = fake_problem(dataset_id=None)
+>       response = client.post(
+            "/api/v1/problems/",
+            headers={"x-key": fake_admin_user.api_key},
+            json=problem.model_dump(),
+        )
+
+test_main.py:516: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/starlette/testclient.py:593: in post
+    return super().post(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+.venv/lib/python3.13/site-packages/starlette/testclient.py:484: in request
+    return super().request(
+.venv/lib/python3.13/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+.venv/lib/python3.13/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+.venv/lib/python3.13/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+.venv/lib/python3.13/site-packages/starlette/testclient.py:377: in handle_request
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/testclient.py:374: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:290: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+/opt/homebrew/Cellar/python@3.13/3.13.0_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.13/site-packages/anyio/from_thread.py:221: in _call_func
+    retval = await retval_or_awaitable
+.venv/lib/python3.13/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:715: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:735: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.13/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.13/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.13/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+.venv/lib/python3.13/site-packages/starlette/concurrency.py:39: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+.venv/lib/python3.13/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:2441: in run_sync_in_worker_thread
+    return await future
+.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py:943: in run
+    result = context.run(func, *args)
+app/api/v1/endpoints/problems.py:21: in create_problem
+    return CRUDProblem(session, api_user).create(problem_create)
+app/crud/problem.py:23: in create
+    raise e
+app/crud/problem.py:18: in create
+    self.session.commit()
+.venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py:2028: in commit
+    trans.commit(_to_root=True)
+<string>:2: in commit
+    ???
+.venv/lib/python3.13/site-packages/sqlalchemy/orm/state_changes.py:139: in _go
+    ret_value = fn(self, *arg, **kw)
+.venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py:1313: in commit
+    self._prepare_impl()
+<string>:2: in _prepare_impl
+    ???
+.venv/lib/python3.13/site-packages/sqlalchemy/orm/state_changes.py:139: in _go
+    ret_value = fn(self, *arg, **kw)
+.venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py:1288: in _prepare_impl
+    self.session.flush()
+.venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py:4352: in flush
+    self._flush(objects)
+.venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py:4487: in _flush
+    with util.safe_reraise():
+.venv/lib/python3.13/site-packages/sqlalchemy/util/langhelpers.py:146: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py:4448: in _flush
+    flush_context.execute()
+.venv/lib/python3.13/site-packages/sqlalchemy/orm/unitofwork.py:466: in execute
+    rec.execute(self)
+.venv/lib/python3.13/site-packages/sqlalchemy/orm/unitofwork.py:642: in execute
+    util.preloaded.orm_persistence.save_obj(
+.venv/lib/python3.13/site-packages/sqlalchemy/orm/persistence.py:93: in save_obj
+    _emit_insert_statements(
+.venv/lib/python3.13/site-packages/sqlalchemy/orm/persistence.py:1233: in _emit_insert_statements
+    result = connection.execute(
+.venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py:1418: in execute
+    return meth(
+.venv/lib/python3.13/site-packages/sqlalchemy/sql/elements.py:515: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py:1640: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py:2355: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x108fa65d0>
+cursor = <sqlite3.Cursor object at 0x10a167740>
+statement = 'INSERT INTO problem (created_at, last_modified, creator_id, question, answer, llm_answer, steps, num_steps, is_correc...lm_name, prompt_format, final_answer, extra_metadata, dataset_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+parameters = ('2024-11-02 16:02:34.320466', '2024-11-02 16:02:34.320467', 1, 'Stand physical believe. Rate two morning idea just re...Far behind role those deal eight water sort. Consider hundred find when. Her performance field value but artist.', ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x108a03a10>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: problem.dataset_id
+E       [SQL: INSERT INTO problem (created_at, last_modified, creator_id, question, answer, llm_answer, steps, num_steps, is_correct, solve_ratio, llm_name, prompt_format, final_answer, extra_metadata, dataset_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+E       [parameters: ('2024-11-02 16:02:34.320466', '2024-11-02 16:02:34.320467', 1, 'Stand physical believe. Rate two morning idea just realize. Source their hard contain factor fill.', 'Mrs throw worry. Usually how no close new arrive.', 'Wind drive necessary position crime ten. Safe real those happy speak national letter. Process walk effect operation color administration alone. Thoug ... (88 characters truncated) ... window. Age pretty least accept bad. Far behind role those deal eight water sort. Consider hundred find when. Her performance field value but artist.', '["Wind drive necessary position crime ten.", "Safe real those happy speak national letter.", "Process walk effect operation color administration alon ... (119 characters truncated) ...  pretty least accept bad.", "Far behind role those deal eight water sort.", "Consider hundred find when.", "Her performance field value but artist."]', 10, 0, 3856080113.4923, 'thompson.biz', 'Front-line impactful adapter', '{"answers": ["U", "x", "B", "C", "Z", "C", "j", "d", "C", "k", "T", "V", "Z", "k", "F", "S"]}', '{"source": "Miller LLC", "version": 5, "tags": ["relate", "I", "rest"]}', None)]
+E       (Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+.venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py:941: IntegrityError
+_______________________ test_invalid_annotation_creation _______________________
+
+client = <starlette.testclient.TestClient object at 0x1088e2b30>
+fake_annotation = <function fake_annotation.<locals>._create_annotation at 0x108ffb7e0>
+fake_admin_user = User(id=1, creator_id=-1, api_key='FuiEUpo2_lCxW6VkS3i6qA5XUgSVXhRt3E6g_nhk7hU', created_at=datetime.datetime(2024, 11...4, 622385), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 34, 622390), name='Jonathan Park', permissions='admin')
+
+    def test_invalid_annotation_creation(
+        client: TestClient, fake_annotation, fake_admin_user
+    ):
+        # Try to create annotation without problem_id
+>       annotation = fake_annotation(problem_id=None)
+
+test_main.py:528: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test_main.py:134: in _create_annotation
+    return AnnotationCreate(
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:811: in __init__
+    sqlmodel_init(self=__pydantic_self__, data=data)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def sqlmodel_init(*, self: "SQLModel", data: Dict[str, Any]) -> None:
+        old_dict = self.__dict__.copy()
+        if not is_table_model_class(self.__class__):
+>           self.__pydantic_validator__.validate_python(
+                data,
+                self_instance=self,
+            )
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for AnnotationCreate
+E           problem_id
+E             Input should be a valid integer [type=int_type, input_value=None, input_type=NoneType]
+E               For further information visit https://errors.pydantic.dev/2.9/v/int_type
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:350: ValidationError
+_________________________ test_invalid_issue_creation __________________________
+
+client = <starlette.testclient.TestClient object at 0x108ff3a10>
+fake_issue = <function fake_issue.<locals>._create_issue at 0x1090dc860>
+fake_admin_user = User(id=1, creator_id=-1, api_key='DAusUxGwdzwSDlg57DncBw58Hi8Y-bVP9koufZfZKHE', created_at=datetime.datetime(2024, 11...640471), last_modified=datetime.datetime(2024, 11, 2, 16, 2, 34, 640474), name='Pamela Gutierrez', permissions='admin')
+
+    def test_invalid_issue_creation(client: TestClient, fake_issue, fake_admin_user):
+        # Try to create issue without problem_id
+>       issue = fake_issue(problem_id=None)
+
+test_main.py:539: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test_main.py:148: in _create_issue
+    return IssueCreate(
+.venv/lib/python3.13/site-packages/sqlmodel/main.py:811: in __init__
+    sqlmodel_init(self=__pydantic_self__, data=data)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def sqlmodel_init(*, self: "SQLModel", data: Dict[str, Any]) -> None:
+        old_dict = self.__dict__.copy()
+        if not is_table_model_class(self.__class__):
+>           self.__pydantic_validator__.validate_python(
+                data,
+                self_instance=self,
+            )
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for IssueCreate
+E           problem_id
+E             Input should be a valid integer [type=int_type, input_value=None, input_type=NoneType]
+E               For further information visit https://errors.pydantic.dev/2.9/v/int_type
+
+.venv/lib/python3.13/site-packages/sqlmodel/_compat.py:350: ValidationError
+=========================== short test summary info ============================
+FAILED test_main.py::TestUsers::test_create_user - assert 403 == 200
+FAILED test_main.py::TestUsers::test_read_users - pydantic_core._pydantic_cor...
+FAILED test_main.py::TestUsers::test_read_user - assert 403 == 200
+FAILED test_main.py::TestUsers::test_update_user - assert 403 == 200
+FAILED test_main.py::TestUsers::test_delete_user - assert 403 == 200
+FAILED test_main.py::TestDatasets::test_create_dataset - pydantic_core._pydan...
+FAILED test_main.py::TestDatasets::test_read_dataset - pydantic_core._pydanti...
+FAILED test_main.py::TestProblems::test_create_problem - pydantic_core._pydan...
+FAILED test_main.py::TestProblems::test_read_problem - pydantic_core._pydanti...
+FAILED test_main.py::TestAnnotations::test_create_annotation - pydantic_core....
+FAILED test_main.py::TestAnnotations::test_read_annotation - pydantic_core._p...
+FAILED test_main.py::TestIssues::test_create_issue - pydantic_core._pydantic_...
+FAILED test_main.py::TestIssues::test_read_issue - pydantic_core._pydantic_co...
+FAILED test_main.py::test_user_problems - assert 403 == 200
+FAILED test_main.py::test_user_annotations - assert 403 == 200
+FAILED test_main.py::test_dataset_problems - pydantic_core._pydantic_core.Val...
+FAILED test_main.py::test_problem_annotations - pydantic_core._pydantic_core....
+FAILED test_main.py::test_dataset_issues - pydantic_core._pydantic_core.Valid...
+FAILED test_main.py::test_problem_issues - pydantic_core._pydantic_core.Valid...
+FAILED test_main.py::test_unauthorized_access - assert 403 == 401
+FAILED test_main.py::test_invalid_problem_creation - sqlalchemy.exc.Integrity...
+FAILED test_main.py::test_invalid_annotation_creation - pydantic_core._pydant...
+FAILED test_main.py::test_invalid_issue_creation - pydantic_core._pydantic_co...
+========================= 23 failed, 9 passed in 2.80s =========================

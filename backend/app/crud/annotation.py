@@ -63,7 +63,6 @@ class CRUDAnnotation(CRUDBase):
         try:
             self.session.delete(db_annotation)
             self.session.commit()
-            self.session.refresh(db_annotation)
             return AnnotationRead.model_validate(db_annotation)
         except Exception as e:
             self.session.rollback()
