@@ -1,8 +1,9 @@
 from typing import Optional
 
-from app.schemas.base import CreateBase, PublicBase, UpdateBase
 from pydantic import field_validator
 from sqlmodel import SQLModel
+
+from app.schemas.base import ReadBase, UpdateBase
 
 
 class UserBase(SQLModel):
@@ -16,11 +17,11 @@ class UserBase(SQLModel):
         return v
 
 
-class UserCreate(UserBase, CreateBase):
+class UserCreate(UserBase):
     pass
 
 
-class UserPublic(UserBase, PublicBase):
+class UserRead(UserBase, ReadBase):
     pass
 
 

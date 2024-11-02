@@ -1,7 +1,8 @@
 from typing import Optional
 
-from app.schemas.base import CreateBase, PublicBase, UpdateBase
 from sqlmodel import SQLModel
+
+from app.schemas.base import ReadBase, UpdateBase
 
 
 class AnnotationBase(SQLModel):
@@ -9,11 +10,11 @@ class AnnotationBase(SQLModel):
     complete: bool = False
 
 
-class AnnotationCreate(AnnotationBase, CreateBase):
+class AnnotationCreate(AnnotationBase):
     problem_id: int
 
 
-class AnnotationPublic(AnnotationBase, PublicBase):
+class AnnotationRead(AnnotationBase, ReadBase):
     problem_id: int
 
 

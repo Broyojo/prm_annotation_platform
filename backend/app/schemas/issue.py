@@ -1,7 +1,8 @@
 from typing import Optional
 
-from app.schemas.base import CreateBase, PublicBase, UpdateBase
 from sqlmodel import SQLModel
+
+from app.schemas.base import ReadBase, UpdateBase
 
 
 class IssueBase(SQLModel):
@@ -9,11 +10,11 @@ class IssueBase(SQLModel):
     resolved: bool = False
 
 
-class IssueCreate(IssueBase, CreateBase):
+class IssueCreate(IssueBase):
     problem_id: int
 
 
-class IssuePublic(IssueBase, PublicBase):
+class IssueRead(IssueBase, ReadBase):
     problem_id: int
 
 

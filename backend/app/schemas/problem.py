@@ -1,7 +1,8 @@
 from typing import Optional
 
-from app.schemas.base import CreateBase, PublicBase, UpdateBase
 from sqlmodel import SQLModel
+
+from app.schemas.base import ReadBase, UpdateBase
 
 
 class ProblemBase(SQLModel):
@@ -18,12 +19,12 @@ class ProblemBase(SQLModel):
     extra_metadata: Optional[dict] = None
 
 
-class ProblemCreate(ProblemBase, CreateBase):
+class ProblemCreate(ProblemBase):
     # either can provide problems with a dataset, or add a problem individually to an existing dataset
     dataset_id: Optional[int] = None
 
 
-class ProblemPublic(ProblemBase, PublicBase):
+class ProblemRead(ProblemBase, ReadBase):
     dataset_id: int
 
 

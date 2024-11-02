@@ -1,7 +1,8 @@
 import logging
 
-from app.core.config import settings
 from sqlmodel import Session, SQLModel, create_engine
+
+from app.core.config import settings
 
 logger = logging.getLogger("uvicorn.error")
 

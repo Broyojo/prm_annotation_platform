@@ -1,11 +1,12 @@
 import logging
 from contextlib import asynccontextmanager
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.api.v1.api import api_router
 from app.core.config import settings
 from app.database import create_db_and_tables
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 logger = logging.getLogger("uvicorn.error")
 

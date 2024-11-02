@@ -4,18 +4,14 @@ from typing import Optional
 from sqlmodel import SQLModel
 
 
-class CreateBase(SQLModel):
-    pass
-
-
-class PublicBase(SQLModel):
+class ReadBase(SQLModel):
     id: int
 
+    creator_id: int
     created_at: datetime
     last_modified: datetime
 
-    creator_id: int
-
+    version: int
     valid_from: datetime
     valid_to: Optional[datetime]
     modifier_id: int
