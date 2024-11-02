@@ -11,8 +11,7 @@ header_scheme = APIKeyHeader(name="x-key")
 async def get_api_user(
     api_key: str = Security(header_scheme), session=Depends(get_session)
 ) -> User:
-    query = select(User).where(User.api_key == api_key)
-    user = session.exec(query).first()
+    user = session.exec(select(User).where(User.api_key == api_key)).first()
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
