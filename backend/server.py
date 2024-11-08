@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from enum import Enum
 
 from database import Annotation, Dataset, Problem, User
-from fastapi import Depends, FastAPI, HTTPException, Query, Security
+from fastapi import Depends, FastAPI, HTTPException, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
@@ -21,7 +21,9 @@ header_scheme = APIKeyHeader(name="x-key")
 async def lifespan(app: FastAPI):
     global engine
     logger.info("Loading database")
-    engine = create_engine("sqlite:///prmbench_database.db")
+    engine = create_engine(
+        "sqlite:///prmbench_database.db", connect_args={"check_same_thread": False}
+    )
     SQLModel.metadata.create_all(engine)
     yield
 
