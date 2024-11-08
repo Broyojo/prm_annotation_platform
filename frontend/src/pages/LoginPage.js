@@ -1,6 +1,8 @@
 import { Box, Button, Heading, Input, useToast, VStack } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import origin from './config';
+
 
 const LoginPage = ({ onLogin }) => {
     const [apiKey, setApiKey] = useState('');
@@ -13,7 +15,7 @@ const LoginPage = ({ onLogin }) => {
         if (apiKey.trim()) {
             setLoading(true);
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/datasets', {
+                const response = await fetch(`${origin}/api/datasets`, {
                     method: 'GET',
                     headers: {
                         'x-key': apiKey

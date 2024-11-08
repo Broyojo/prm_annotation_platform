@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DatasetCard from '../components/DatasetCard';
 import LoginPage from './LoginPage';
-
+import origin from './config';
 // TODO: show user's api key on the home page here
 
 const DatasetsPage = () => {
@@ -21,7 +21,7 @@ const DatasetsPage = () => {
     const fetchDatasets = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/datasets', {
+            const response = await fetch(`${origin}/api/datasets`, {
                 method: 'GET',
                 headers: {
                     'x-key': apiKey

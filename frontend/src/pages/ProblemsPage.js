@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import KaTeX from '../components/KaTeX';
 import Pagination from '../components/Pagination';
 import StepCardWithRating from '../components/StepCardWithRating';
-
+import origin from './config';
 const ProblemsPage = () => {
     const { datasetId, problemId } = useParams();
     const [problem, setProblem] = useState(null);
@@ -30,7 +30,7 @@ const ProblemsPage = () => {
 
     const fetchDatasetInfo = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/datasets/${datasetId}`, {
+            const response = await fetch(`${origin}/api/datasets/${datasetId}`, {
                 headers: {
                     'x-key': localStorage.getItem('apiKey')
                 }
@@ -49,7 +49,7 @@ const ProblemsPage = () => {
     const fetchProblem = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/datasets/${datasetId}/problems/${problemId}`, {
+            const response = await fetch(`${origin}/api/datasets/${datasetId}/problems/${problemId}`, {
                 headers: {
                     'x-key': localStorage.getItem('apiKey')
                 }
@@ -70,7 +70,7 @@ const ProblemsPage = () => {
     const fetchAnnotation = async () => {
         try {
             const response = await fetch(
-                `http://127.0.0.1:8000/api/datasets/${datasetId}/problems/${problemId}/annotation`,
+                `${origin}/api/datasets/${datasetId}/problems/${problemId}/annotation`,
                 {
                     headers: {
                         'x-key': localStorage.getItem('apiKey')
@@ -118,7 +118,7 @@ const ProblemsPage = () => {
     const handleStepRating = async (stepIndex, rating) => {
         try {
             const response = await fetch(
-                `http://127.0.0.1:8000/api/datasets/${datasetId}/problems/${problemId}/annotation`,
+                `${origin}/api/datasets/${datasetId}/problems/${problemId}/annotation`,
                 {
                     method: 'PUT',
                     headers: {
