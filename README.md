@@ -1,3 +1,11 @@
+# Things that need to be done still:
+
+1. save and load annotations for users
+2. switch database to postgresql for proper concurrency
+3. add api routes for creating, reading, updating, and deleting datasets, problems, annotations, issues, users, etc.
+
+# Some old stuff:
+
 Current plan:
 1. Make annotation platform first with no user login system - just for the demo on friday
 2. add user login system with API key and hardcoded users
