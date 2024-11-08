@@ -241,6 +241,10 @@ def download_database():
                     user_query = select(User).where(User.id == annotation.user_id)
                     user = session.exec(user_query).first()
 
+                    if not user:
+                        print("missing user for annotation:", annotation)
+                        continue
+
                     annotation_dict = {
                         "user": user.name,
                         "step_labels": (
@@ -258,7 +262,7 @@ def download_database():
         # Write to file
         output_path = "prmbench_export.json"
         with open(output_path, "w") as f:
-            json.dump(output, f, indent=2)
+            json.dump(output, f, indent=4)
 
         print(f"Database exported to {output_path}")
         return output_path
