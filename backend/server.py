@@ -158,7 +158,7 @@ class RatingEnum(str, Enum):
     GOOD = "Good"
     NEUTRAL = "Neutral"
     BAD = "Bad"
-    ERROR = "Error"
+    ERROR = "Error Realization"
 
 
 class AnnotationUpdate(BaseModel):

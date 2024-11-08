@@ -72,7 +72,7 @@ const StepCardWithRating = ({ step, index, savedRating, onRateStep }) => {
                 {getRatingButton("Good", <CheckIcon />, "green")}
                 {getRatingButton("Neutral", <InfoIcon />, "blue")}
                 {getRatingButton("Bad", <CloseIcon />, "red")}
-                {getRatingButton("Error", <WarningIcon />, "yellow")}
+                {getRatingButton("Error Realization", <WarningIcon />, "yellow")}
             </ButtonGroup>
             {isSubmitting && <Spinner size="sm" ml={2} />}
         </Box>
