@@ -1,8 +1,6 @@
 # Things that need to be done still:
 
 1. save and load annotations for users
-2. switch database to postgresql for proper concurrency
-3. add api routes for creating, reading, updating, and deleting datasets, problems, annotations, issues, users, etc.
 
 # Some old stuff:
 
