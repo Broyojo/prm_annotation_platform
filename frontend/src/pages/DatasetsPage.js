@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import DatasetCard from '../components/DatasetCard';
 import LoginPage from './LoginPage';
 
+// TODO: show user's api key on the home page here
+
 const DatasetsPage = () => {
     const [datasets, setDatasets] = useState([]);
     const [apiKey, setApiKey] = useState(localStorage.getItem('apiKey') || '');
@@ -19,7 +21,7 @@ const DatasetsPage = () => {
     const fetchDatasets = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://127.0.0.1:8000/datasets', {
+            const response = await fetch('http://127.0.0.1:8000/api/datasets', {
                 method: 'GET',
                 headers: {
                     'x-key': apiKey
@@ -50,7 +52,7 @@ const DatasetsPage = () => {
     };
 
     const handleDatasetClick = (dataset) => {
-        navigate(`/datasets/${dataset.id}/problems`);
+        navigate(`/datasets/${dataset.id}/problems/0`);
     };
 
     if (!apiKey) {

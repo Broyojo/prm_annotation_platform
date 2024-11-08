@@ -1,27 +1,34 @@
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, Grid, GridItem, Heading, Spinner } from '@chakra-ui/react';
+import { Box, Button, Flex, Grid, GridItem, Heading, Spinner, useBreakpointValue } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import KaTeX from '../components/KaTeX';
+import Pagination from '../components/Pagination';
 import StepCardWithRating from '../components/StepCardWithRating';
 
 const ProblemsPage = () => {
-    const { datasetId } = useParams();
+    const { datasetId, problemId } = useParams();
     const [problem, setProblem] = useState(null);
-    const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
     const [totalProblems, setTotalProblems] = useState(0);
     const [loading, setLoading] = useState(false);
     const [datasetName, setDatasetName] = useState('');
+    const [editableNumber, setEditableNumber] = useState('');
     const navigate = useNavigate();
+
+    const middleElementsCount = useBreakpointValue({ base: 3, md: 5, lg: 7 });
 
     useEffect(() => {
         fetchDatasetInfo();
         fetchProblem();
-    }, [datasetId, currentProblemIndex]);
+    }, [datasetId, problemId]);
+
+    useEffect(() => {
+        setEditableNumber(String(Number(problemId) + 1));
+    }, [problemId]);
 
     const fetchDatasetInfo = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/datasets/${datasetId}`, {
+            const response = await fetch(`http://127.0.0.1:8000/api/datasets/${datasetId}`, {
                 headers: {
                     'x-key': localStorage.getItem('apiKey')
                 }
@@ -40,7 +47,7 @@ const ProblemsPage = () => {
     const fetchProblem = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8000/datasets/${datasetId}/problems/${currentProblemIndex}`, {
+            const response = await fetch(`http://127.0.0.1:8000/api/datasets/${datasetId}/problems/${problemId}`, {
                 headers: {
                     'x-key': localStorage.getItem('apiKey')
                 }
@@ -58,16 +65,26 @@ const ProblemsPage = () => {
         setLoading(false);
     };
 
-    const handleNextProblem = () => {
-        setCurrentProblemIndex(prev => Math.min(prev + 1, totalProblems - 1));
-    };
-
-    const handlePreviousProblem = () => {
-        setCurrentProblemIndex(prev => Math.max(prev - 1, 0));
+    const handleProblemSelect = (selectedProblemId) => {
+        navigate(`/datasets/${datasetId}/problems/${selectedProblemId}`);
     };
 
     const handleBackToDatasetsPage = () => {
         navigate('/');
+    };
+
+    const handleEditableNumberChange = (e) => {
+        setEditableNumber(e.target.value);
+    };
+
+    const handleEditableNumberSubmit = (e) => {
+        e.preventDefault();
+        const newProblemId = Number(editableNumber) - 1;
+        if (newProblemId >= 0 && newProblemId < totalProblems) {
+            handleProblemSelect(newProblemId);
+        } else {
+            setEditableNumber(String(Number(problemId) + 1));
+        }
     };
 
     if (loading) {
@@ -79,7 +96,7 @@ const ProblemsPage = () => {
     }
 
     if (!problem) {
-        return null;
+        return null; // TODO: send to some 404 page or send to last problem?
     }
 
     return (
@@ -94,7 +111,7 @@ const ProblemsPage = () => {
                     Back to Datasets
                 </Button>
                 <Heading as="h1" size="lg">
-                    {datasetName} - Problem {currentProblemIndex + 1} of {totalProblems}
+                    {datasetName} - Problem {Number(problemId) + 1}
                 </Heading>
             </Box>
             <Grid templateColumns="repeat(2, 1fr)" gap={4} flex="1" minHeight={0}>
@@ -115,13 +132,16 @@ const ProblemsPage = () => {
                     ))}
                 </GridItem>
             </Grid>
-            <Flex justifyContent="space-between" p={4} borderTop="1px" borderColor="gray.200">
-                <Button onClick={handlePreviousProblem} disabled={currentProblemIndex === 0} size="sm">
-                    Previous Problem
-                </Button>
-                <Button onClick={handleNextProblem} disabled={currentProblemIndex === totalProblems - 1} size="sm">
-                    Next Problem
-                </Button>
+            <Flex justifyContent="center" alignItems="center" p={4} borderTop="1px" borderColor="gray.200">
+                <Pagination
+                    currentPage={Number(problemId)}
+                    totalPages={totalProblems}
+                    onPageChange={handleProblemSelect}
+                    editableNumber={editableNumber}
+                    onEditableNumberChange={handleEditableNumberChange}
+                    onEditableNumberSubmit={handleEditableNumberSubmit}
+                    middleElementsCount={middleElementsCount}
+                />
             </Flex>
         </Flex>
     );
