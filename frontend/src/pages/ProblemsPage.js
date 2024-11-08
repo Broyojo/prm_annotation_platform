@@ -13,6 +13,7 @@ const ProblemsPage = () => {
     const [loading, setLoading] = useState(false);
     const [datasetName, setDatasetName] = useState('');
     const [editableNumber, setEditableNumber] = useState('');
+    const [stepAnnotations, setStepAnnotations] = useState({});
     const navigate = useNavigate();
 
     const middleElementsCount = useBreakpointValue({ base: 3, md: 5, lg: 7 });
@@ -20,6 +21,7 @@ const ProblemsPage = () => {
     useEffect(() => {
         fetchDatasetInfo();
         fetchProblem();
+        fetchAnnotation();
     }, [datasetId, problemId]);
 
     useEffect(() => {
@@ -65,6 +67,32 @@ const ProblemsPage = () => {
         setLoading(false);
     };
 
+    const fetchAnnotation = async () => {
+        try {
+            const response = await fetch(
+                `http://127.0.0.1:8000/api/datasets/${datasetId}/problems/${problemId}/annotation`,
+                {
+                    headers: {
+                        'x-key': localStorage.getItem('apiKey')
+                    }
+                }
+            );
+            if (response.ok) {
+                const data = await response.json();
+                if (data.annotation) {
+                    setStepAnnotations(data.annotation.step_labels);
+                } else {
+                    setStepAnnotations({}); // Reset if no annotation exists
+                }
+            } else if (response.status === 403) {
+                navigate('/login');
+            }
+        } catch (error) {
+            console.error('Error fetching annotation:', error);
+        }
+    };
+
+
     const handleProblemSelect = (selectedProblemId) => {
         navigate(`/datasets/${datasetId}/problems/${selectedProblemId}`);
     };
@@ -84,6 +112,35 @@ const ProblemsPage = () => {
             handleProblemSelect(newProblemId);
         } else {
             setEditableNumber(String(Number(problemId) + 1));
+        }
+    };
+
+    const handleStepRating = async (stepIndex, rating) => {
+        try {
+            const response = await fetch(
+                `http://127.0.0.1:8000/api/datasets/${datasetId}/problems/${problemId}/annotation`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-key': localStorage.getItem('apiKey')
+                    },
+                    body: JSON.stringify({
+                        step_index: stepIndex,
+                        rating: rating
+                    })
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                setStepAnnotations(data.annotation.step_labels);
+            } else if (response.status === 403) {
+                navigate('/login');
+            }
+        } catch (error) {
+            console.error('Error updating annotation:', error);
+            // You might want to add some error handling UI here
         }
     };
 
@@ -127,8 +184,14 @@ const ProblemsPage = () => {
                 </GridItem>
                 <GridItem overflowY="auto" p={4}>
                     <Heading as="h2" size="md" mb={4}>Model Answer Steps:</Heading>
-                    {JSON.parse(problem.steps).map((step, index) => (
-                        <StepCardWithRating key={index} step={step} index={index} />
+                    {JSON.parse(problem.model_answer_steps).map((step, index) => (
+                        <StepCardWithRating
+                            key={index}
+                            step={step}
+                            index={index}
+                            savedRating={stepAnnotations[index]}
+                            onRateStep={handleStepRating}
+                        />
                     ))}
                 </GridItem>
             </Grid>

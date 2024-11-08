@@ -28,14 +28,16 @@ class Annotation(SQLModel, table=True):
 
 
 class Problem(SQLModel, table=True):
+    model_config = {"protected_namespaces": ()}  # type: ignore
+
     id: Optional[int] = Field(default=None, primary_key=True, unique=True)
     question: str
     answer: str
-    llm_answer: str = Field(unique=True)
-    steps: str  # json list of steps
+    model_answer: str = Field(unique=True)
+    model_answer_steps: str  # json list of steps
     is_correct: Optional[bool] = None
     solve_ratio: Optional[float] = None
-    llm_name: Optional[str] = None
+    model_name: Optional[str] = None
     prompt_format: Optional[str] = None
     final_answer: Optional[str] = None  # json string of final answer
 
@@ -120,10 +122,10 @@ def update_database():
 
                 # Process each problem
                 for problem_data in problems_data:
-                    # Check if problem exists (using llm_answer as unique identifier)
+                    # Check if problem exists (using model_answer as unique identifier)
                     existing_problem = session.exec(
                         select(Problem).where(
-                            Problem.llm_answer == problem_data["model_answer"]
+                            Problem.model_answer == problem_data["model_answer"]
                         )
                     ).first()
 
@@ -131,8 +133,8 @@ def update_database():
                         new_problem = Problem(
                             question=problem_data["question"],
                             answer=problem_data["answer"],
-                            llm_answer=problem_data["model_answer"],
-                            steps=(
+                            model_answer=problem_data["model_answer"],
+                            model_answer_steps=(
                                 json.dumps(
                                     problem_data["model_answer_steps"]
                                     if "model_answer_steps" in problem_data
@@ -143,7 +145,7 @@ def update_database():
                             ),
                             is_correct=problem_data.get("is_correct"),
                             solve_ratio=problem_data.get("solve_ratio"),
-                            llm_name=problem_data.get("model_name"),
+                            model_name=problem_data.get("model_name"),
                             prompt_format=problem_data.get("prompt_format"),
                             final_answer=json.dumps(problem_data.get("final_answer")),
                             dataset=existing_dataset,
@@ -159,5 +161,109 @@ def update_database():
                 raise e
 
 
+def download_database():
+    """Downloads the entire database into a structured JSON file.
+    Format:
+    {
+        "datasets": [
+            {
+                "name": "Dataset Name",
+                "domain": "STEM",
+                "problems": [
+                    {
+                        "question": "...",
+                        "answer": "...",
+                        "model_answer": "...",
+                        "model_answer_steps": [...],
+                        "is_correct": true/false,
+                        "solve_ratio": 0.8,
+                        "model_answer": "...",
+                        "prompt_format": "...",
+                        "final_answer": "...",
+                        "annotations": [
+                            {
+                                "user": "username",
+                                "step_labels": {...}
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+    """
+    engine = create_engine("sqlite:///prmbench_database.db")
+
+    with Session(engine) as session:
+        # Get all datasets
+        datasets_query = select(Dataset)
+        datasets = session.exec(datasets_query).all()
+
+        output = {"datasets": []}
+
+        for dataset in datasets:
+            dataset_dict = {
+                "name": dataset.name,
+                "domain": dataset.domain,
+                "problems": [],
+            }
+
+            # Get all problems for this dataset
+            problems_query = select(Problem).where(Problem.dataset_id == dataset.id)
+            problems = session.exec(problems_query).all()
+
+            for problem in problems:
+                problem_dict = {
+                    "question": problem.question,
+                    "answer": problem.answer,
+                    "model_answer": problem.model_answer,
+                    "model_answer_steps": json.loads(problem.model_answer_steps),
+                    "is_correct": problem.is_correct,
+                    "solve_ratio": problem.solve_ratio,
+                    "model_name": problem.model_name,
+                    "prompt_format": problem.prompt_format,
+                    "final_answer": (
+                        json.loads(problem.final_answer)
+                        if problem.final_answer
+                        else None
+                    ),
+                    "annotations": [],
+                }
+
+                # Get all annotations for this problem
+                annotations_query = select(Annotation).where(
+                    Annotation.problem_id == problem.id
+                )
+                annotations = session.exec(annotations_query).all()
+
+                for annotation in annotations:
+                    # Get user name instead of ID
+                    user_query = select(User).where(User.id == annotation.user_id)
+                    user = session.exec(user_query).first()
+
+                    annotation_dict = {
+                        "user": user.name,
+                        "step_labels": (
+                            json.loads(annotation.step_labels)
+                            if annotation.step_labels
+                            else {}
+                        ),
+                    }
+                    problem_dict["annotations"].append(annotation_dict)
+
+                dataset_dict["problems"].append(problem_dict)
+
+            output["datasets"].append(dataset_dict)
+
+        # Write to file
+        output_path = "prmbench_export.json"
+        with open(output_path, "w") as f:
+            json.dump(output, f, indent=2)
+
+        print(f"Database exported to {output_path}")
+        return output_path
+
+
 if __name__ == "__main__":
     update_database()
+    download_database()

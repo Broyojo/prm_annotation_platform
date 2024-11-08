@@ -1,14 +1,28 @@
 import { CheckIcon, CloseIcon, InfoIcon, WarningIcon } from '@chakra-ui/icons';
-import { Box, Button, ButtonGroup, Text, useColorModeValue } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import { Box, Button, ButtonGroup, Spinner, Text, useColorModeValue } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
 import KaTeX from './KaTeX';
 
-const StepCardWithRating = ({ step, index }) => {
-    const [rating, setRating] = useState(null);
+const StepCardWithRating = ({ step, index, savedRating, onRateStep }) => {
+    const [rating, setRating] = useState(savedRating || null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleRateStep = (newRating) => {
-        setRating(newRating);
-        // Here you can add logic to send the rating to your backend if needed
+    useEffect(() => {
+        setRating(savedRating || null);
+    }, [savedRating]);
+
+    const handleRateStep = async (newRating) => {
+        if (isSubmitting) return;
+
+        setIsSubmitting(true);
+        try {
+            await onRateStep(index, newRating);
+            setRating(newRating);
+        } catch (error) {
+            console.error('Error rating step:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const bgColor = useColorModeValue('white', 'gray.700');
@@ -24,6 +38,7 @@ const StepCardWithRating = ({ step, index }) => {
             size="sm"
             variant={rating === ratingValue ? "solid" : "outline"}
             fontWeight="medium"
+            isDisabled={isSubmitting}
         >
             {ratingValue}
         </Button>
@@ -57,8 +72,9 @@ const StepCardWithRating = ({ step, index }) => {
                 {getRatingButton("Good", <CheckIcon />, "green")}
                 {getRatingButton("Neutral", <InfoIcon />, "blue")}
                 {getRatingButton("Bad", <CloseIcon />, "red")}
-                {getRatingButton("Error Realization", <WarningIcon />, "yellow")}
+                {getRatingButton("Error", <WarningIcon />, "yellow")}
             </ButtonGroup>
+            {isSubmitting && <Spinner size="sm" ml={2} />}
         </Box>
     );
 };
