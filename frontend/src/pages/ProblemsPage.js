@@ -1,4 +1,4 @@
-import { ArrowBackIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import { Box, Button, Flex, Grid, GridItem, Heading, Spinner, useBreakpointValue } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -6,6 +6,7 @@ import KaTeX from '../components/KaTeX';
 import Pagination from '../components/Pagination';
 import StepCardWithRating from '../components/StepCardWithRating';
 import origin from './config';
+
 const ProblemsPage = () => {
     const { datasetId, problemId } = useParams();
     const [problem, setProblem] = useState(null);
@@ -17,6 +18,8 @@ const ProblemsPage = () => {
     const navigate = useNavigate();
 
     const middleElementsCount = useBreakpointValue({ base: 3, md: 5, lg: 7 });
+
+    const GUIDELINES_URL = 'https://docs.google.com/document/d/e/2PACX-1vSJFXYe8hHzKvU4Xno-NJua_kL60oSbNc2FS4-K-cSBpymXdZNTHOa9PUYMl21Gv-kQh-gTL73mooso/pub';
 
     useEffect(() => {
         fetchDatasetInfo();
@@ -82,7 +85,7 @@ const ProblemsPage = () => {
                 if (data.annotation) {
                     setStepAnnotations(data.annotation.step_labels);
                 } else {
-                    setStepAnnotations({}); // Reset if no annotation exists
+                    setStepAnnotations({});
                 }
             } else if (response.status === 403) {
                 navigate('/login');
@@ -91,7 +94,6 @@ const ProblemsPage = () => {
             console.error('Error fetching annotation:', error);
         }
     };
-
 
     const handleProblemSelect = (selectedProblemId) => {
         navigate(`/datasets/${datasetId}/problems/${selectedProblemId}`);
@@ -140,7 +142,6 @@ const ProblemsPage = () => {
             }
         } catch (error) {
             console.error('Error updating annotation:', error);
-            // You might want to add some error handling UI here
         }
     };
 
@@ -153,20 +154,32 @@ const ProblemsPage = () => {
     }
 
     if (!problem) {
-        return null; // TODO: send to some 404 page or send to last problem?
+        return null;
     }
 
     return (
         <Flex flexDirection="column" height="100vh" overflow="hidden">
             <Box p={4} borderBottom="1px" borderColor="gray.200">
-                <Button
-                    onClick={handleBackToDatasetsPage}
-                    mb={2}
-                    leftIcon={<ArrowBackIcon />}
-                    size="sm"
-                >
-                    Back to Datasets
-                </Button>
+                <Flex justifyContent="space-between" alignItems="center" mb={2}>
+                    <Button
+                        onClick={handleBackToDatasetsPage}
+                        leftIcon={<ArrowBackIcon />}
+                        size="sm"
+                    >
+                        Back to Datasets
+                    </Button>
+                    <Button
+                        as="a"
+                        href={GUIDELINES_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        rightIcon={<ExternalLinkIcon />}
+                        size="sm"
+                        colorScheme="blue"
+                    >
+                        Annotation Guidelines
+                    </Button>
+                </Flex>
                 <Heading as="h1" size="lg">
                     {datasetName} - Problem {Number(problemId) + 1}
                 </Heading>
