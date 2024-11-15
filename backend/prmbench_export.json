@@ -26,7 +26,14 @@
                     "final_answer": [
                         "105"
                     ],
-                    "annotations": []
+                    "annotations": [
+                        {
+                            "user": "David Andrews",
+                            "step_labels": {
+                                "0": "Good"
+                            }
+                        }
+                    ]
                 },
                 {
                     "question": "The rechargeable lithium ion battery has been developed in Japan.\n\nThe standard electromotive force of the battery is $3.70 \\mathrm{~V}$. Assume that the halfreaction at the cathode is\n\n$$\n\\mathrm{CoO}_{2}+\\mathrm{Li}^{+}+\\mathrm{e}^{-} \\rightarrow \\mathrm{LiCoO}_{2}\n$$\n\nand the half-reaction at the anode is\n\n$$\n\\mathrm{LiC}_{6} \\rightarrow 6 \\mathrm{C}+\\mathrm{Li}^{+}+\\mathrm{e}^{-} .\n$$\n\nThe battery cell is constructed using $\\mathrm{LiCoO}_{2}$ and graphite (C) as the electrode materials.Calculate the mass of the anode in the completely charged state and that in completely discharged state if $10.00 \\mathrm{~g}$ of $\\mathrm{LiCoO}_{2}$ and $10.00 \\mathrm{~g}$ of graphite (C) are present initially.",

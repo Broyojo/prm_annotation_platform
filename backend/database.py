@@ -161,7 +161,7 @@ def update_database():
                 raise e
 
 
-def download_database():
+def download_database(engine=None):
     """Downloads the entire database into a structured JSON file.
     Format:
     {
@@ -192,7 +192,8 @@ def download_database():
         ]
     }
     """
-    engine = create_engine("sqlite:///prmbench_database.db")
+    if engine is None:
+        engine = create_engine("sqlite:///prmbench_database.db")
 
     with Session(engine) as session:
         # Get all datasets
@@ -259,15 +260,16 @@ def download_database():
 
             output["datasets"].append(dataset_dict)
 
-        # Write to file
-        output_path = "prmbench_export.json"
-        with open(output_path, "w") as f:
-            json.dump(output, f, indent=4)
-
-        print(f"Database exported to {output_path}")
-        return output_path
+        return output
 
 
 if __name__ == "__main__":
     update_database()
-    download_database()
+    output = download_database()
+    
+    # Write to file
+    output_path = "prmbench_export.json"
+    with open(output_path, "w") as f:
+        json.dump(output, f, indent=4)
+
+    print(f"Database exported to {output_path}")

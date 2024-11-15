@@ -1,10 +1,13 @@
+from datetime import datetime
 import json
 import logging
 from contextlib import asynccontextmanager
 from enum import Enum
 
-from database import Annotation, Dataset, Problem, User
-from fastapi import Depends, FastAPI, HTTPException, Security
+from fastapi.responses import JSONResponse
+
+from database import Annotation, Dataset, Problem, User, download_database
+from fastapi import Depends, FastAPI, HTTPException, Response, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
@@ -225,3 +228,23 @@ async def update_annotation(
         except Exception as e:
             session.rollback()
             raise e
+
+@app.get("/export")
+async def export_database(user: User = Depends(authenticate_user)):
+    try:
+        output = download_database(engine=engine)
+        json_content = json.dumps(output, indent=4)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"database_export_{timestamp}.json"
+        response = Response(
+            content=json_content,
+            media_type="application/json"
+        )
+        response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
+        response.headers["Content-Length"] = str(len(json_content))
+        return response
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Failed to export database: {str(e)}"}
+        )
