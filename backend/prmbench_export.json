@@ -30,7 +30,9 @@
                         {
                             "user": "David Andrews",
                             "step_labels": {
-                                "0": "Good"
+                                "0": "Good",
+                                "1": "Neutral",
+                                "2": "Good"
                             }
                         }
                     ]
