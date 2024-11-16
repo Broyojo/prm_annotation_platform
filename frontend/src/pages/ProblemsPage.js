@@ -107,9 +107,8 @@ const ProblemsPage = () => {
         setEditableNumber(e.target.value);
     };
 
-    const handleEditableNumberSubmit = (e) => {
-        e.preventDefault();
-        const newProblemId = Number(editableNumber) - 1;
+    const handleEditableNumberSubmit = (value) => {
+        const newProblemId = Number(value) - 1;
         if (newProblemId >= 0 && newProblemId < totalProblems) {
             handleProblemSelect(newProblemId);
         } else {
@@ -214,7 +213,6 @@ const ProblemsPage = () => {
                     totalPages={totalProblems}
                     onPageChange={handleProblemSelect}
                     editableNumber={editableNumber}
-                    onEditableNumberChange={handleEditableNumberChange}
                     onEditableNumberSubmit={handleEditableNumberSubmit}
                     middleElementsCount={middleElementsCount}
                 />

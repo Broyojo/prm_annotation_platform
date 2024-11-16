@@ -1,4 +1,44 @@
-# Things that need to be done still:
+# PRM Annotation Platform
+
+Some useful links:
+- [Video on how to use the platform](https://youtu.be/3XettEOoCZw)
+- [Main PRM github repo](https://github.com/TheDuckAI/prm)
+
+## Format of Database Export
+
+```json
+{
+    "datasets": [
+        {
+            "name": "<dataset name>",
+            "domain": "<dataset domain>",
+            "problems": [
+                {
+                    "question": "...",
+                    "answer": "...",
+                    ...
+                    "annotations": [
+                        {
+                            "user": "<annotation author>",
+                            "step_labels": {
+                                "0": "Good",
+                                "1": "Bad",
+                                "5": "Error Realization",
+                                ...
+                            }
+                        },
+                        ...
+                    ]
+                },
+                ...
+            ],
+        },
+        ...
+    ]
+}
+```
+
+<!-- # Things that need to be done still:
 
 1. save and load annotations for users
 
@@ -32,4 +72,4 @@ Researchers:
 Engineers:
 1. As an engineer, I want unit testing and the code should be easy to read and functional.
 2. As an engineer, There should be decent documentation.
-3. As an engineer, there should be comprehensive error handling.
+3. As an engineer, there should be comprehensive error handling. -->

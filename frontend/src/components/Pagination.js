@@ -1,6 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { Button, HStack, Input, Text } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Pagination = ({
     currentPage,
@@ -11,56 +11,119 @@ const Pagination = ({
     onEditableNumberSubmit,
     middleElementsCount = 5
 }) => {
+    const [inputValue, setInputValue] = useState(editableNumber);
+
+    useEffect(() => {
+        setInputValue(editableNumber);
+    }, [editableNumber]);
+
+    const handleLocalChange = (e) => {
+        setInputValue(e.target.value);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onEditableNumberSubmit(inputValue);
+    };
+
     const renderProblemSelectionMenu = () => {
         const items = [];
+        const halfMiddle = Math.floor(middleElementsCount / 2);
 
-        const addButton = (index) => {
-            if (index === currentPage) {
+        // First page
+        if (currentPage === 0) {
+            items.push(
+                <form key="input-start" onSubmit={handleSubmit} style={{ margin: 0 }}>
+                    <Input
+                        size="sm"
+                        width="60px"
+                        textAlign="center"
+                        value={inputValue}
+                        onChange={handleLocalChange}
+                    />
+                </form>
+            );
+        } else {
+            items.push(
+                <Button
+                    key={0}
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => onPageChange(0)}
+                >
+                    1
+                </Button>
+            );
+        }
+
+        // Show ellipsis after first page if needed
+        if (currentPage > halfMiddle + 1) {
+            items.push(<Text key="ellipsis-start">...</Text>);
+        }
+
+        // Middle pages
+        const start = Math.max(1, Math.min(currentPage - halfMiddle, totalPages - middleElementsCount - 1));
+        const end = Math.min(start + middleElementsCount - 1, totalPages - 2);
+
+        for (let i = start; i <= end; i++) {
+            if (i === currentPage) {
                 items.push(
-                    <form key={index} onSubmit={onEditableNumberSubmit}>
+                    <form key={`input-${i}`} onSubmit={handleSubmit} style={{ margin: 0 }}>
                         <Input
                             size="sm"
                             width="60px"
                             textAlign="center"
-                            value={editableNumber}
-                            onChange={onEditableNumberChange}
-                            onBlur={onEditableNumberSubmit}
+                            value={inputValue}
+                            onChange={handleLocalChange}
                         />
                     </form>
                 );
             } else {
                 items.push(
                     <Button
-                        key={index}
+                        key={i}
                         size="sm"
                         variant="ghost"
-                        onClick={() => onPageChange(index)}
+                        onClick={() => onPageChange(i)}
                     >
-                        {index + 1}
+                        {i + 1}
                     </Button>
                 );
             }
-        };
-
-        const addEllipsis = (key) => {
-            items.push(<Text key={key}>...</Text>);
-        };
-
-        addButton(0);
-
-        if (currentPage > Math.floor(middleElementsCount / 2) + 1) addEllipsis('start');
-
-        const halfMiddle = Math.floor(middleElementsCount / 2);
-        const start = Math.max(1, Math.min(currentPage - halfMiddle, totalPages - middleElementsCount - 1));
-        const end = Math.min(start + middleElementsCount - 1, totalPages - 2);
-
-        for (let i = start; i <= end; i++) {
-            addButton(i);
         }
 
-        if (currentPage < totalPages - Math.floor(middleElementsCount / 2) - 2) addEllipsis('end');
+        // Show ellipsis before last page if needed
+        if (currentPage < totalPages - halfMiddle - 2) {
+            items.push(<Text key="ellipsis-end">...</Text>);
+        }
 
-        if (totalPages > 1) addButton(totalPages - 1);
+        // Last page
+        if (totalPages > 1) {
+            if (currentPage === totalPages - 1) {
+                items.push(
+                    <form key="input-end" onSubmit={handleSubmit} style={{ margin: 0 }}>
+                        <Input
+                            size="sm"
+                            width="60px"
+                            textAlign="center"
+                            value={inputValue}
+                            onChange={handleLocalChange}
+                        />
+                    </form>
+                );
+            } else {
+                items.push(
+                    <Button
+                        key={totalPages - 1}
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => onPageChange(totalPages - 1)}
+                    >
+                        {totalPages}
+                    </Button>
+                );
+            }
+        }
 
         return items;
     };
