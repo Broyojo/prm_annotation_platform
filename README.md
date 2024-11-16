@@ -1,6 +1,7 @@
 # PRM Annotation Platform
 
 Some useful links:
+- [Annotation Platform](https://prm.duckai.org)
 - [Video on how to use the platform](https://youtu.be/3XettEOoCZw)
 - [Main PRM github repo](https://github.com/TheDuckAI/prm)
 
@@ -16,7 +17,7 @@ Some useful links:
                 {
                     "question": "...",
                     "answer": "...",
-                    ...
+                    // ...
                     "annotations": [
                         {
                             "user": "<annotation author>",
@@ -24,16 +25,16 @@ Some useful links:
                                 "0": "Good",
                                 "1": "Bad",
                                 "5": "Error Realization",
-                                ...
+                                // ...
                             }
                         },
-                        ...
+                        // ...
                     ]
                 },
-                ...
+                // ...
             ],
         },
-        ...
+        // ...
     ]
 }
 ```
