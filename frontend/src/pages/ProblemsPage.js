@@ -21,6 +21,18 @@ const ProblemsPage = () => {
 
     const GUIDELINES_URL = 'https://docs.google.com/document/d/e/2PACX-1vSJFXYe8hHzKvU4Xno-NJua_kL60oSbNc2FS4-K-cSBpymXdZNTHOa9PUYMl21Gv-kQh-gTL73mooso/pub';
 
+    const getIssueUrl = () => {
+        const baseUrl = 'https://github.com/TheDuckAI/prm/issues/new';
+        const params = new URLSearchParams({
+            assignees: '',
+            labels: 'formatting issue',
+            projects: '',
+            template: 'problem-formatting-issue.md',
+            title: `Formatting Issue for ${datasetName} [Problem ${Number(problemId) + 1}]`
+        });
+        return `${baseUrl}?${params.toString()}`;
+    };
+
     useEffect(() => {
         fetchDatasetInfo();
         fetchProblem();
@@ -167,17 +179,29 @@ const ProblemsPage = () => {
                     >
                         Back to Datasets
                     </Button>
-                    <Button
-                        as="a"
-                        href={GUIDELINES_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        rightIcon={<ExternalLinkIcon />}
-                        size="sm"
-                        colorScheme="blue"
-                    >
-                        Annotation Guidelines
-                    </Button>
+                    <Flex gap={2}>
+                        <Button
+                            as="a"
+                            href={getIssueUrl()}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            size="sm"
+                            colorScheme="red"
+                        >
+                            Report Formatting Issue
+                        </Button>
+                        <Button
+                            as="a"
+                            href={GUIDELINES_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            rightIcon={<ExternalLinkIcon />}
+                            size="sm"
+                            colorScheme="blue"
+                        >
+                            Annotation Guidelines
+                        </Button>
+                    </Flex>
                 </Flex>
                 <Heading as="h1" size="lg">
                     {datasetName} - Problem {Number(problemId) + 1}
