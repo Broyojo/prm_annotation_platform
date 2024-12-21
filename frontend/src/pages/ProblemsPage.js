@@ -19,7 +19,7 @@ const ProblemsPage = () => {
 
     const middleElementsCount = useBreakpointValue({ base: 3, md: 5, lg: 7 });
 
-    const GUIDELINES_URL = 'https://docs.google.com/document/d/e/2PACX-1vSJFXYe8hHzKvU4Xno-NJua_kL60oSbNc2FS4-K-cSBpymXdZNTHOa9PUYMl21Gv-kQh-gTL73mooso/pub';
+    const GUIDELINES_URL = 'https://docs.google.com/document/d/e/2PACX-1vSkzqp8P8dzWEzDcvkKjbxXIw4cl7SdnwAQTteRHGBbfA_uGfIKFnajU-tcm0lwrixG0_eBrVZYCZvr/pub';
 
     const getIssueUrl = () => {
         const baseUrl = 'https://github.com/TheDuckAI/prm/issues/new';
