@@ -1,9 +1,9 @@
-import { CheckIcon, CloseIcon, InfoIcon, WarningIcon } from '@chakra-ui/icons';
+import { ArrowDownIcon, CheckIcon, CloseIcon, CopyIcon, InfoIcon, WarningIcon } from '@chakra-ui/icons';
 import { Box, Button, ButtonGroup, Spinner, Text, useColorModeValue } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import KaTeX from './KaTeX';
 
-const StepCardWithRating = ({ step, index, savedRating, onRateStep }) => {
+const StepCardWithRating = ({ step, index, savedRating, onRateStep, onStepCopy }) => {
     const [rating, setRating] = useState(savedRating || null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -24,6 +24,19 @@ const StepCardWithRating = ({ step, index, savedRating, onRateStep }) => {
             setIsSubmitting(false);
         }
     };
+
+    const handleCopyBelow = async (rating) => {
+        if (isSubmitting) return;
+
+        setIsSubmitting(true);
+        try {
+            await onStepCopy(index, rating);
+        } catch (error) {
+            console.log("Error copying step:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
 
     const bgColor = useColorModeValue('white', 'gray.700');
     const borderColor = useColorModeValue('gray.200', 'gray.600');
@@ -73,6 +86,16 @@ const StepCardWithRating = ({ step, index, savedRating, onRateStep }) => {
                 {getRatingButton("Neutral", <InfoIcon />, "blue")}
                 {getRatingButton("Bad", <CloseIcon />, "red")}
                 {getRatingButton("Error Realization", <WarningIcon />, "yellow")}
+                <Button
+                    onClick={() => handleCopyBelow(rating)}
+                    leftIcon={<CopyIcon />}
+                    rightIcon={<ArrowDownIcon />}
+                    size="sm"
+                    isDisabled={isSubmitting}
+                    variant="outline"
+                    colorScheme="blackAlpha"
+                    color="black"
+                ></Button>
             </ButtonGroup>
             {isSubmitting && <Spinner size="sm" ml={2} />}
         </Box>

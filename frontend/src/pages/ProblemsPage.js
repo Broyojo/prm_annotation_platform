@@ -115,10 +115,6 @@ const ProblemsPage = () => {
         navigate('/');
     };
 
-    const handleEditableNumberChange = (e) => {
-        setEditableNumber(e.target.value);
-    };
-
     const handleEditableNumberSubmit = (value) => {
         const newProblemId = Number(value) - 1;
         if (newProblemId >= 0 && newProblemId < totalProblems) {
@@ -138,10 +134,46 @@ const ProblemsPage = () => {
                         'Content-Type': 'application/json',
                         'x-key': localStorage.getItem('apiKey')
                     },
-                    body: JSON.stringify({
+                    body: JSON.stringify([{
                         step_index: stepIndex,
                         rating: rating
-                    })
+                    }])
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                // no need to update since it is only a single step update
+                // setStepAnnotations(data.annotation.step_labels);
+            } else if (response.status === 403) {
+                navigate('/login');
+            }
+        } catch (error) {
+            console.error('Error updating annotation:', error);
+        }
+    };
+
+    const handleStepCopy = async (stepIndex, rating) => {
+        let numSteps = JSON.parse(problem.model_answer_steps).length;
+
+        let stepRatings = [];
+        for (let i = stepIndex + 1; i < numSteps; i++) {
+            stepRatings.push({
+                step_index: i,
+                rating: rating,
+            });
+        }
+
+        try {
+            const response = await fetch(
+                `${origin}/api/datasets/${datasetId}/problems/${problemId}/annotation`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-key': localStorage.getItem('apiKey')
+                    },
+                    body: JSON.stringify(stepRatings)
                 }
             );
 
@@ -154,7 +186,7 @@ const ProblemsPage = () => {
         } catch (error) {
             console.error('Error updating annotation:', error);
         }
-    };
+    }
 
     if (loading) {
         return (
@@ -227,6 +259,7 @@ const ProblemsPage = () => {
                             index={index}
                             savedRating={stepAnnotations[index]}
                             onRateStep={handleStepRating}
+                            onStepCopy={handleStepCopy}
                         />
                     ))}
                 </GridItem>

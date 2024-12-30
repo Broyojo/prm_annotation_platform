@@ -1,14 +1,13 @@
-from datetime import datetime
-import orjson
 import logging
 from contextlib import asynccontextmanager
+from datetime import datetime
 from enum import Enum
 
-from fastapi.responses import JSONResponse
-
+import orjson
 from database import Annotation, Dataset, Problem, User, download_database
 from fastapi import Depends, FastAPI, HTTPException, Response, Security
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 from sqlmodel import Session, SQLModel, create_engine, select
@@ -173,7 +172,7 @@ class AnnotationUpdate(BaseModel):
 async def update_annotation(
     dataset_id: int,
     problem_index: int,
-    update: AnnotationUpdate,
+    updates: list[AnnotationUpdate],
     user: User = Depends(authenticate_user),
 ) -> dict:
     with Session(engine) as session:
@@ -199,17 +198,18 @@ async def update_annotation(
             if annotation:
                 # Update existing annotation
                 step_labels = (
-                    orjson.loads(annotation.step_labels) if annotation.step_labels else {}
+                    orjson.loads(annotation.step_labels)
+                    if annotation.step_labels
+                    else {}
                 )
-                step_labels[str(update.step_index)] = (
-                    update.rating.value
-                )  # Use .value to get string
+                for update in updates:
+                    step_labels[str(update.step_index)] = update.rating.value
                 annotation.step_labels = orjson.dumps(step_labels).decode("utf-8")
             else:
                 # Create new annotation
                 step_labels = {
-                    str(update.step_index): update.rating.value
-                }  # Use .value to get string
+                    str(update.step_index): update.rating.value for update in updates
+                }
                 annotation = Annotation(
                     step_labels=orjson.dumps(step_labels).decode("utf-8"),
                     problem_id=problem.id,
@@ -229,6 +229,7 @@ async def update_annotation(
             session.rollback()
             raise e
 
+
 @app.get("/export")
 async def export_database(user: User = Depends(authenticate_user)):
     try:
@@ -236,15 +237,11 @@ async def export_database(user: User = Depends(authenticate_user)):
         json_content = orjson.dumps(output, indent=4).decode("utf-8")
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"database_export_{timestamp}.json"
-        response = Response(
-            content=json_content,
-            media_type="application/json"
-        )
+        response = Response(content=json_content, media_type="application/json")
         response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
         response.headers["Content-Length"] = str(len(json_content))
         return response
     except Exception as e:
         return JSONResponse(
-            status_code=500,
-            content={"error": f"Failed to export database: {str(e)}"}
+            status_code=500, content={"error": f"Failed to export database: {str(e)}"}
         )
