@@ -1,5 +1,5 @@
 from datetime import datetime
-import json
+import orjson
 import logging
 from contextlib import asynccontextmanager
 from enum import Enum
@@ -152,7 +152,7 @@ async def get_annotation(
         return {
             "annotation": {
                 "id": annotation.id,
-                "step_labels": json.loads(annotation.step_labels),
+                "step_labels": orjson.loads(annotation.step_labels),
             }
         }
 
@@ -199,19 +199,19 @@ async def update_annotation(
             if annotation:
                 # Update existing annotation
                 step_labels = (
-                    json.loads(annotation.step_labels) if annotation.step_labels else {}
+                    orjson.loads(annotation.step_labels) if annotation.step_labels else {}
                 )
                 step_labels[str(update.step_index)] = (
                     update.rating.value
                 )  # Use .value to get string
-                annotation.step_labels = json.dumps(step_labels)
+                annotation.step_labels = orjson.dumps(step_labels).decode("utf-8")
             else:
                 # Create new annotation
                 step_labels = {
                     str(update.step_index): update.rating.value
                 }  # Use .value to get string
                 annotation = Annotation(
-                    step_labels=json.dumps(step_labels),
+                    step_labels=orjson.dumps(step_labels).decode("utf-8"),
                     problem_id=problem.id,
                     user_id=user.id,
                 )
@@ -222,7 +222,7 @@ async def update_annotation(
             return {
                 "annotation": {
                     "id": annotation.id,
-                    "step_labels": json.loads(annotation.step_labels),
+                    "step_labels": orjson.loads(annotation.step_labels),
                 }
             }
         except Exception as e:
@@ -233,7 +233,7 @@ async def update_annotation(
 async def export_database(user: User = Depends(authenticate_user)):
     try:
         output = download_database(engine=engine)
-        json_content = json.dumps(output, indent=4)
+        json_content = orjson.dumps(output, indent=4).decode("utf-8")
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"database_export_{timestamp}.json"
         response = Response(

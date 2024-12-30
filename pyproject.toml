@@ -8,5 +8,6 @@ dependencies = [
     "faker>=33.1.0",
     "fastapi[standard]>=0.115.6",
     "nltk>=3.9.1",
+    "orjson>=3.10.13",
     "sqlmodel>=0.0.22",
 ]
