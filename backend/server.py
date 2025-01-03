@@ -38,6 +38,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition"],
 )
 
 
@@ -234,7 +235,7 @@ async def update_annotation(
 async def export_database(user: User = Depends(authenticate_user)):
     try:
         output = download_database(engine=engine)
-        json_content = orjson.dumps(output, indent=4).decode("utf-8")
+        json_content = orjson.dumps(output)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"database_export_{timestamp}.json"
         response = Response(content=json_content, media_type="application/json")
