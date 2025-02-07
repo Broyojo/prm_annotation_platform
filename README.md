@@ -7,17 +7,18 @@ Some useful links:
 
 ## Developement
 Setup instructions:
-*With pip:*
+
+**With pip:**
 ```bash
 $ pip install -r requirements.txt
 ```
 
-*With uv:*
+**With uv:**
 ```bash
 $ uv sync
 ```
 
-*Start the backend:*
+**Start the backend:**
 ```bash
 $ cd backend
 $ fastapi dev server.py # debug
@@ -25,21 +26,21 @@ $ fastapi dev server.py # debug
 $ fastapi start server.py # release
 ```
 
-*Start the frontend:*
+**Start the frontend:**
 
 There are two options, bun or npm. They are equivalent.
 
 With npm:
 ```bash
 $ cd frontend
-$ npm install
+$ npm install # one-time install
 $ npm run start
 ```
 
 With bun:
 ```bash
 $ cd frontend
-$ bun install
+$ bun install # one-time install
 $ bun run start
 ```
 
