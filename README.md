@@ -8,6 +8,8 @@ Some useful links:
 ## Developement
 Setup instructions:
 
+You may either use pip or uv, whichever you prefer.
+
 **With pip:**
 ```bash
 $ pip install -r requirements.txt
@@ -23,7 +25,7 @@ $ uv sync
 $ cd backend
 $ fastapi dev server.py # debug
 # OR
-$ fastapi start server.py # release
+$ fastapi run server.py # release
 ```
 
 **Start the frontend:**
