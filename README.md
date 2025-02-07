@@ -12,6 +12,8 @@ You may either use pip or uv, whichever you prefer.
 
 **With pip:**
 ```bash
+$ python3 -m venv .venv
+$ source ./venv/bin/activate
 $ pip install -r requirements.txt
 ```
 
@@ -26,6 +28,11 @@ $ cd backend
 $ fastapi dev server.py # debug
 # OR
 $ fastapi run server.py # release
+```
+
+If the above commands don't work, you can run FastAPI as a module:
+```bash
+$ python -m fastapi run server.py
 ```
 
 **Start the frontend:**
@@ -45,6 +52,8 @@ $ cd frontend
 $ bun install # one-time install
 $ bun run start
 ```
+
+Take the database file (*.db) and put it into the `/backend`.
 
 ## Format of Database Export
 
