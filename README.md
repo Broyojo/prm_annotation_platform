@@ -5,6 +5,44 @@ Some useful links:
 - [Video on how to use the platform](https://youtu.be/3XettEOoCZw)
 - [Main PRM github repo](https://github.com/TheDuckAI/prm)
 
+## Developement
+Setup instructions:
+*With pip:*
+```bash
+$ pip install -r requirements.txt
+```
+
+*With uv:*
+```bash
+$ uv sync
+```
+
+*Start the backend:*
+```bash
+$ cd backend
+$ fastapi dev server.py # debug
+# OR
+$ fastapi start server.py # release
+```
+
+*Start the frontend:*
+
+There are two options, bun or npm. They are equivalent.
+
+With npm:
+```bash
+$ cd frontend
+$ npm install
+$ npm run start
+```
+
+With bun:
+```bash
+$ cd frontend
+$ bun install
+$ bun run start
+```
+
 ## Format of Database Export
 
 ```json
