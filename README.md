@@ -8,7 +8,8 @@ Some useful links:
 ## Developement
 Setup instructions:
 
-You may either use pip or uv, whichever you prefer.
+### Installation
+You may either use pip or uv.
 
 **With pip:**
 ```bash
@@ -22,7 +23,10 @@ $ pip install -r requirements.txt
 $ uv sync
 ```
 
-**Start the backend:**
+### Launch
+The launch consists of a frontend session and a backend session.
+
+**Backend Session**
 ```bash
 $ cd backend
 $ fastapi dev server.py # debug
@@ -30,16 +34,20 @@ $ fastapi dev server.py # debug
 $ fastapi run server.py # release
 ```
 
-If the above commands don't work, you can run FastAPI as a module:
+If the above commands fail, you can also run FastAPI as a module:
 ```bash
 $ python -m fastapi run server.py
 ```
 
-**Start the frontend:**
+**Frontend Session**
 
-There are two options, bun or npm. They are equivalent.
+There are two equivalent approach, bun or npm.
 
 With npm:
+
+installation
+- For MacOS system, install node/npm/bun in brew.
+
 ```bash
 $ cd frontend
 $ npm install # one-time install
@@ -53,7 +61,10 @@ $ bun install # one-time install
 $ bun run start
 ```
 
-Take the database file (*.db) and put it into the `/backend`.
+if success, the login in page can be accessed in http://localhost:3000/login.
+
+#### Loading the database
+Place database file (*.db) under `/backend`.
 
 ## Format of Database Export
 
