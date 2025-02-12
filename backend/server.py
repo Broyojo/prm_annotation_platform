@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 from sqlmodel import Session, SQLModel, create_engine, select
+from utils import report_timestamp
 
 engine = None
 
@@ -149,10 +150,26 @@ async def get_annotation(
         if not annotation:
             return {"annotation": None}
 
+        # Update the latest start time of problem
+        step_labels = orjson.loads(annotation.step_labels)
+        time_stamp = report_timestamp()
+        for step_idx, step_label in step_labels.items():
+            if isinstance(step_label, str):
+                step_label = {
+                            "label": step_label,
+                            "time_created": "NotRecored",
+                            "time_last_update": "NotRecored",
+                            "time_last_start": time_stamp,
+                            "num_revision": 0
+                        }
+            else:
+                step_label["time_last_start"] = time_stamp
+            step_labels[step_idx] = step_label
+
         return {
             "annotation": {
                 "id": annotation.id,
-                "step_labels": orjson.loads(annotation.step_labels),
+                "step_labels": step_labels,
             }
         }
 
@@ -203,14 +220,44 @@ async def update_annotation(
                     if annotation.step_labels
                     else {}
                 )
+
                 for update in updates:
-                    step_labels[str(update.step_index)] = update.rating.value
+                    step_index_key = str(update.step_index)
+                    if step_index_key in step_labels and \
+                        isinstance(step_labels[step_index_key], str):
+                        step_labels[step_index_key] = {
+                            "label": step_labels[step_index_key],
+                            "time_created": "NotRecored",
+                            "time_last_update": "NotRecored",
+                            "num_revision": 0
+                        }
+                    elif step_index_key in step_labels:
+                        time_stamp = report_timestamp()
+                        step_labels[step_index_key]["label"] = update.rating.value
+                        if "timestamp_created" not in step_labels[step_index_key]:
+                            step_labels[step_index_key]["timestamp_created"] = time_stamp
+                        step_labels[step_index_key]["time_last_update"] = time_stamp
+                        step_labels[step_index_key]["num_revision"] = step_labels[step_index_key].get("num_revision", -1) + 1
+                    else:
+                        time_stamp = report_timestamp()
+                        step_labels[step_index_key] = {
+                            "label": update.rating.value,
+                            "time_created": time_stamp,
+                            "time_last_update": time_stamp,
+                            "num_revision": 0
+                        }
+
                 annotation.step_labels = orjson.dumps(step_labels).decode("utf-8")
             else:
                 # Create new annotation
+                time_stamp = report_timestamp()
                 step_labels = {
-                    str(update.step_index): update.rating.value for update in updates
+                    str(update.step_index): {"label": update.rating.value,
+                                             "time_created": time_stamp,
+                                             "time_last_update": time_stamp,
+                                             "num_revision": 0} for update in updates
                 }
+
                 annotation = Annotation(
                     step_labels=orjson.dumps(step_labels).decode("utf-8"),
                     problem_id=problem.id,
@@ -219,7 +266,6 @@ async def update_annotation(
                 session.add(annotation)
 
             session.commit()
-
             return {
                 "annotation": {
                     "id": annotation.id,
@@ -228,6 +274,7 @@ async def update_annotation(
             }
         except Exception as e:
             session.rollback()
+            print("Annotation Error:")
             raise e
 
 

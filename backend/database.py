@@ -5,6 +5,7 @@ from typing import Optional
 
 import nltk
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
+from utils import model_answer_step_merging, report_timestamp
 
 
 class User(SQLModel, table=True):
@@ -136,10 +137,10 @@ def update_database():
                             model_answer=problem_data["model_answer"],
                             model_answer_steps=(
                                 json.dumps(
-                                    problem_data["model_answer_steps"]
+                                    model_answer_step_merging(problem_data["model_answer_steps"])
                                     if "model_answer_steps" in problem_data
-                                    else nltk.sent_tokenize(
-                                        problem_data["model_answer"]
+                                    else model_answer_step_merging(nltk.sent_tokenize(
+                                        problem_data["model_answer"])
                                     )
                                 )
                             ),
@@ -148,6 +149,7 @@ def update_database():
                             model_name=problem_data.get("model_name"),
                             prompt_format=problem_data.get("prompt_format"),
                             final_answer=json.dumps(problem_data.get("final_answer")),
+                            time_added=json.dumps(report_timestamp()),
                             dataset=existing_dataset,
                         )
                         session.add(new_problem)
@@ -183,7 +185,7 @@ def download_database(engine=None):
                         "annotations": [
                             {
                                 "user": "username",
-                                "step_labels": {...}
+                                "step_labels": {...},
                             }
                         ]
                     }
