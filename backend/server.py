@@ -11,7 +11,8 @@ from fastapi.responses import JSONResponse
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 from sqlmodel import Session, SQLModel, create_engine, select
-from utils import report_timestamp
+from utils import report_timestamp, model_answer_step_merging 
+import pdb
 
 engine = None
 
@@ -115,6 +116,22 @@ async def get_problem(
 
         if not problem:
             raise HTTPException(status_code=404, detail="Problem not found")
+
+        model_answer_steps = orjson.loads(problem.model_answer_steps)
+        model_answer_steps, annotation_step_merge, annotation_step_label_heritage = model_answer_step_merging(model_answer_steps)
+        problem.model_answer_steps = orjson.dumps(model_answer_steps).decode('utf-8')
+
+        # annotation from all users
+        all_user_annotations = problem.annotations
+
+        for user_idx, user_annotation in enumerate(all_user_annotations):
+            user_step_labels_updated = {}
+            user_step_labels = orjson.loads(user_annotation.step_labels)
+            for step_idx, label_step_idx in annotation_step_label_heritage.items():
+                if str(label_step_idx) in user_step_labels:
+                    user_step_labels_updated[str(step_idx)] = user_step_labels[str(label_step_idx)]
+            user_annotation.step_labels = orjson.dumps(user_step_labels_updated).decode('utf-8')
+            problem.annotations[user_idx] = user_annotation
 
         return {"total_problems": total_problems, "problem": problem}
 

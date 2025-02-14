@@ -5,7 +5,9 @@ from typing import Optional
 
 import nltk
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
-from utils import model_answer_step_merging, report_timestamp
+from utils import report_timestamp
+
+import pdb
 
 
 class User(SQLModel, table=True):
@@ -137,10 +139,9 @@ def update_database():
                             model_answer=problem_data["model_answer"],
                             model_answer_steps=(
                                 json.dumps(
-                                    model_answer_step_merging(problem_data["model_answer_steps"])
+                                    problem_data["model_answer_steps"]
                                     if "model_answer_steps" in problem_data
-                                    else model_answer_step_merging(nltk.sent_tokenize(
-                                        problem_data["model_answer"])
+                                    else nltk.sent_tokenize(problem_data["model_answer"]
                                     )
                                 )
                             ),
