@@ -1,41 +1,44 @@
 [
     {
-        "name": "David Andrews"
+        "name": "David Andrews", "access": "admin"
     },
     {
-        "name": "Alex Havrilla"
+        "name": "Alex Havrilla", "access": "dev"
     },
     {
-        "name": "Aran Komatsuzaki"
+        "name": "Aran Komatsuzaki", "access": "dev"
     },
     {
-        "name": "Pawan"
+        "name": "Pawan", "access": "dev"
     },
     {
-        "name": "Shayekh"
+        "name": "Shayekh", "access": "dev"
     },
     {
-        "name": "Srishti Gureja"
+        "name": "Srishti Gureja", "access": "dev"
     },
     {
-        "name": "Alon Albalak"
+        "name": "Alon Albalak", "access": "dev"
     },
     {
-        "name": "Baber Abbasi"
+        "name": "Baber Abbasi", "access": "dev"
     },
     {
-        "name": "Yiyuan Li"
+        "name": "Yiyuan Li", "access": "admin"
     },
     {
-        "name": "Sharad"
+        "name": "Sharad", "access": "dev"
     },
     {
-        "name": "Eigen"
+        "name": "Eigen", "access": "dev"
     },
     {
-        "name": "amayuelas"
+        "name": "amayuelas", "access": "dev"
     },
     {
-        "name": "Sushanth"
+        "name": "Sushanth", "access": "dev"
+    },
+    {
+        "name": "regular annotator", "access": "annotation"
     }
 ]

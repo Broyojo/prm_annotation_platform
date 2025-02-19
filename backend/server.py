@@ -11,7 +11,8 @@ from fastapi.responses import JSONResponse
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 from sqlmodel import Session, SQLModel, create_engine, select
-from utils import report_timestamp, model_answer_step_merging 
+from sqlalchemy import text
+from utils import report_timestamp, model_answer_step_merging, sqlmodel_query2str
 import pdb
 
 engine = None
@@ -99,6 +100,7 @@ async def get_problems(
 async def get_problem(
     dataset_id: int, problem_index: int, user: User = Depends(authenticate_user)
 ) -> dict:
+
     with Session(engine) as session:
         total_query = select(Problem).where(Problem.dataset_id == dataset_id)
         total_problems = len(list(session.exec(total_query)))
@@ -106,6 +108,11 @@ async def get_problem(
         if problem_index < 0 or problem_index >= total_problems:
             raise HTTPException(status_code=404, detail="Problem not found")
 
+        # 'SELECT problem.id, problem.question, problem.answer, 
+        # problem.model_answer, problem.model_answer_steps, problem.is_correct, 
+        # problem.solve_ratio, problem.model_name, problem.prompt_format, 
+        # problem.final_answer, problem.dataset_id 
+        # FROM problem WHERE problem.dataset_id = 5\n LIMIT 1 OFFSET 0'
         query = (
             select(Problem)
             .where(Problem.dataset_id == dataset_id)
@@ -297,16 +304,17 @@ async def update_annotation(
 
 @app.get("/export")
 async def export_database(user: User = Depends(authenticate_user)):
-    try:
-        output = download_database(engine=engine)
-        json_content = orjson.dumps(output)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"database_export_{timestamp}.json"
-        response = Response(content=json_content, media_type="application/json")
-        response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
-        response.headers["Content-Length"] = str(len(json_content))
-        return response
-    except Exception as e:
-        return JSONResponse(
-            status_code=500, content={"error": f"Failed to export database: {str(e)}"}
-        )
+    if user.access in ["admin", "dev"]:
+        try:
+            output = download_database(engine=engine)
+            json_content = orjson.dumps(output)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"database_export_{timestamp}.json"
+            response = Response(content=json_content, media_type="application/json")
+            response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
+            response.headers["Content-Length"] = str(len(json_content))
+            return response
+        except Exception as e:
+            return JSONResponse(
+                status_code=500, content={"error": f"Failed to export database: {str(e)}"}
+            )

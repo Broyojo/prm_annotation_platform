@@ -1,3 +1,5 @@
 .venv
 .DS_Store
 */package-lock.json
+*/users.json
+*.db

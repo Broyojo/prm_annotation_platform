@@ -5,7 +5,9 @@ from typing import Optional
 
 import nltk
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
+from sqlalchemy import text
 from utils import report_timestamp
+from config import database_file
 
 import pdb
 
@@ -13,8 +15,9 @@ import pdb
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True, unique=True)
     name: str = Field(unique=True, index=True)
+    # admin/dev/annotation
+    access: str
     api_key: str = Field(unique=True, index=True)
-
     # a user can have many annotations
     annotations: list["Annotation"] = Relationship(back_populates="user")
 
@@ -34,6 +37,7 @@ class Problem(SQLModel, table=True):
     model_config = {"protected_namespaces": ()}  # type: ignore
 
     id: Optional[int] = Field(default=None, primary_key=True, unique=True)
+    category: str # demonstration/screening/annotation
     question: str
     answer: str
     model_answer: str = Field(unique=True)
@@ -66,7 +70,7 @@ class Dataset(SQLModel, table=True):
 
 def update_database():
     # Initialize database
-    engine = create_engine("sqlite:///prmbench_database.db")
+    engine = create_engine(database_file)
     SQLModel.metadata.create_all(engine)
 
     # Update users
@@ -77,6 +81,7 @@ def update_database():
         try:
             for user_data in users:
                 # Check if user exists
+                user_search_command = text("SELECT user.id, user.name, user.api_key, user.access FROM user where user.name='{}'".format(user_data["name"]))
                 existing_user = session.exec(
                     select(User).where(User.name == user_data["name"])
                 ).first()
@@ -86,7 +91,7 @@ def update_database():
                         name=user_data["name"], api_key=secrets.token_urlsafe(32)
                     )
                     session.add(new_user)
-                    print(f"Added new user: {user_data['name']}")
+                    print(f"Added new user: {user_data['name']} api_key: {new_user.api_key}")
 
             session.commit()
         except Exception as e:
@@ -196,7 +201,7 @@ def download_database(engine=None):
     }
     """
     if engine is None:
-        engine = create_engine("sqlite:///prmbench_database.db")
+        engine = create_engine(database_file)
 
     with Session(engine) as session:
         # Get all datasets
@@ -271,8 +276,8 @@ if __name__ == "__main__":
     output = download_database()
     
     # Write to file
-    output_path = "prmbench_export.json"
-    with open(output_path, "w") as f:
-        json.dump(output, f, indent=4)
+    # output_path = "prmbench_export.json"
+    # with open(output_path, "w") as f:
+    #     json.dump(output, f, indent=4)
 
-    print(f"Database exported to {output_path}")
+    # print(f"Database exported to {output_path}")

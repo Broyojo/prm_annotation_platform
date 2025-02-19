@@ -1,7 +1,13 @@
+import sqlite3
+import json
 import time
 from datetime import datetime
-
 from config import ending_next_merge_suffixes, starting_prev_merge_prefixes
+import pdb
+
+def sqlmodel_query2str(sqlmodel_statement, engine):
+    return str(sqlmodel_statement.compile(engine, compile_kwargs={"literal_binds": True}))
+
 
 def model_answer_step_merging(model_answer_steps_orig):
     model_answer_steps = [x for x in model_answer_steps_orig if len(x.strip()) != 0]

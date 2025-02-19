@@ -92,6 +92,7 @@ const ProblemsPage = () => {
                     }
                 }
             );
+            console.info("fetch annotation response: ", response)
             if (response.ok) {
                 const data = await response.json();
                 if (data.annotation) {
