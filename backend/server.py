@@ -304,7 +304,7 @@ async def update_annotation(
 
 @app.get("/export")
 async def export_database(user: User = Depends(authenticate_user)):
-    if user.access in ["admin", "dev"]:
+    if user.access in ["admin", "dev", "review"]:
         try:
             output = download_database(engine=engine)
             json_content = orjson.dumps(output)
